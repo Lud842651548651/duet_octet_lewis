@@ -1,0 +1,1067 @@
+<!doctype html>
+<html lang="fr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Le laboratoire scellé – Duet, octet et Lewis</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@400;600;700;800&family=Atkinson+Hyperlegible:wght@400;700&display=swap" rel="stylesheet">
+<style>
+:root{
+  --navy:#1d2b53; --navy2:#26386b; --orange:#f59e0b; --c1:#2f6fd6; --c2:#5a9a12; --c3:#d6336c;
+  --paper:#fbfaf7; --card:#ffffff; --ink:#22232b; --muted:#5b6070; --line:#e1e4ee;
+  --ok:#2b8a3e; --okbg:#e6f6ea; --ko:#c92a2a; --kobg:#fdecec; --warn:#b26b00; --warnbg:#fff4e0;
+  --font:'Nunito', system-ui, sans-serif; --title:'Fredoka', 'Nunito', sans-serif;
+  --fs:17px;
+}
+body.dys{ --font:'Atkinson Hyperlegible', 'Nunito', sans-serif; --title:'Atkinson Hyperlegible', sans-serif; }
+body.dys main{ letter-spacing:.03em; word-spacing:.14em; }
+body.dys p, body.dys li{ line-height:1.85; }
+body.big{ --fs:20px; }
+body.contrast{ --muted:#1f1f1f; --line:#5c6275; --ink:#000; }
+body.contrast .card{ border:2px solid #000; }
+body.noanim *{ animation:none !important; transition:none !important; }
+*{ box-sizing:border-box; }
+html{ font-size:var(--fs); background:#0f1a36; }
+body{ margin:0; font-family:var(--font); color:var(--ink); min-height:100vh;
+  background: radial-gradient(1200px 600px at 15% -10%, #31508f 0%, #1a2a55 45%, #0f1a36 100%) fixed; }
+button, input, select{ font-family:inherit; font-size:1rem; }
+a{ color:var(--c1); }
+
+/* ---------- barre du haut ---------- */
+.topbar{ position:sticky; top:0; z-index:20; display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+  padding:8px 16px; background:rgba(15,26,54,.92); backdrop-filter: blur(6px); color:white; border-bottom:1px solid rgba(255,255,255,.12); }
+.topbar .brand{ font-family:var(--title); font-weight:700; font-size:1.1rem; letter-spacing:.01em; display:flex; align-items:center; gap:8px; }
+.topbar .brand .atom{ width:28px; height:28px; }
+.topbar .sp{ flex:1; }
+.code{ display:flex; gap:4px; }
+.code span{ width:26px; height:30px; border-radius:6px; display:inline-flex; align-items:center; justify-content:center;
+  background:rgba(255,255,255,.08); border:1.5px dashed rgba(255,255,255,.35); font-family:var(--title); font-weight:700; }
+.code span.on{ background:var(--orange); color:#3b2400; border:1.5px solid var(--orange); }
+.tbtn{ background:rgba(255,255,255,.1); color:white; border:1px solid rgba(255,255,255,.25); border-radius:10px; padding:7px 12px; cursor:pointer; min-height:40px; }
+.tbtn:hover{ background:rgba(255,255,255,.2); }
+.chrono{ font-variant-numeric: tabular-nums; font-weight:700; min-width:64px; text-align:center; }
+.chrono.hidden{ display:none; }
+@media (max-width:640px){
+  .topbar{ position:static; padding:6px 10px; gap:6px; }
+  .topbar .brand{ font-size:.95rem; width:100%; }
+  .topbar .sp{ display:none; }
+  .tbtn .lbl{ display:none; }
+  .tbtn{ padding:6px 10px; }
+  .code span{ width:22px; height:26px; }
+  h1{ font-size:1.45rem; } .hero h1{ font-size:1.6rem; }
+  .card{ padding:14px; }
+}
+
+main{ max-width:1000px; margin:0 auto; padding:18px 16px 60px; }
+.card{ background:var(--card); border-radius:16px; padding:18px 20px; margin:14px 0; box-shadow:0 8px 30px rgba(0,0,0,.18); border:1px solid var(--line); }
+h1,h2,h3{ font-family:var(--title); color:var(--navy); margin:0 0 8px; line-height:1.2; }
+h1{ font-size:1.8rem; } h2{ font-size:1.35rem; } h3{ font-size:1.1rem; }
+p{ line-height:1.6; margin:.4em 0; }
+.muted{ color:var(--muted); }
+.hero{ color:white; text-align:center; padding:26px 10px 6px; }
+.hero h1{ color:white; font-size:2.1rem; }
+.hero p{ color:#d9def0; max-width:720px; margin:6px auto; }
+.btn{ display:inline-flex; align-items:center; justify-content:center; gap:8px; border:none; border-radius:12px; padding:11px 18px; min-height:46px;
+  background:var(--navy); color:white; font-weight:800; cursor:pointer; box-shadow:0 3px 0 rgba(0,0,0,.2); }
+.btn:hover{ filter:brightness(1.12); }
+.btn:disabled{ opacity:.45; cursor:not-allowed; filter:none; }
+.btn.orange{ background:var(--orange); color:#3b2400; }
+.btn.green{ background:var(--ok); }
+.btn.ghost{ background:white; color:var(--navy); border:2px solid var(--navy); box-shadow:none; }
+.btn.small{ padding:6px 12px; min-height:38px; font-size:.92rem; }
+.row{ display:flex; gap:12px; flex-wrap:wrap; align-items:center; }
+.grow{ flex:1; }
+label.f{ display:block; font-weight:700; margin:10px 0 4px; }
+input[type=text], select{ width:100%; padding:10px 12px; border-radius:10px; border:2px solid var(--line); min-height:46px; }
+input[type=text]:focus, select:focus{ outline:3px solid #9ec5ff; border-color:var(--c1); }
+
+/* ---------- plan du labo ---------- */
+.map{ display:grid; grid-template-columns: repeat(3, 1fr); gap:14px; }
+@media (max-width:760px){ .map{ grid-template-columns: 1fr 1fr; } }
+@media (max-width:480px){ .map{ grid-template-columns: 1fr; } }
+.room{ position:relative; border-radius:16px; padding:16px; min-height:150px; cursor:pointer; text-align:left; border:3px solid transparent;
+  background:linear-gradient(160deg,#ffffff,#eef2fb); color:var(--ink); box-shadow:0 6px 18px rgba(0,0,0,.25); }
+.room:hover{ transform:translateY(-2px); }
+.room .ic{ font-size:2rem; }
+.room h3{ margin:6px 0 4px; }
+.room .st{ font-weight:800; font-size:.9rem; }
+.room .lt{ position:absolute; top:12px; right:14px; width:38px; height:42px; border-radius:8px; display:flex; align-items:center; justify-content:center;
+  font-family:var(--title); font-weight:700; font-size:1.3rem; background:#e9ecf5; color:#9aa0b5; border:2px dashed #b9bfd2; }
+.room.done{ border-color:var(--ok); }
+.room.done .lt{ background:var(--orange); color:#3b2400; border:2px solid var(--orange); }
+.room.locked{ cursor:not-allowed; filter:grayscale(.85); opacity:.7; }
+.room.cur{ border-color:var(--orange); }
+.room.final{ background:linear-gradient(160deg,#fff7e6,#ffe8b8); }
+
+/* ---------- salle ---------- */
+.steps{ display:flex; gap:8px; flex-wrap:wrap; margin:6px 0 2px; }
+.step{ border-radius:30px; padding:7px 14px; font-weight:800; background:#e9ecf5; color:#7a8099; border:2px solid transparent; cursor:pointer; }
+.step.on{ background:var(--navy); color:white; }
+.step.ok{ background:var(--okbg); color:var(--ok); border-color:var(--ok); }
+.step:disabled{ cursor:not-allowed; opacity:.6; }
+.story{ background:linear-gradient(90deg,#fff6e6,#ffffff); border-left:5px solid var(--orange); border-radius:10px; padding:10px 14px; margin:8px 0; }
+.retiens{ background:#fff6e6; border:2px solid var(--orange); border-radius:14px; padding:12px 16px; }
+.retiens h3{ color:#8a5300; }
+.def{ background:#eef3ff; border-left:5px solid var(--c1); border-radius:10px; padding:8px 12px; margin:8px 0; }
+.obs{ border:2px dashed #b9bfd2; border-radius:12px; padding:10px 14px; margin:10px 0; }
+.obs .rep{ display:none; margin-top:6px; background:var(--okbg); border-radius:8px; padding:8px 10px; color:#1e5b2b; }
+.obs.open .rep{ display:block; }
+.obs .q{ font-weight:700; }
+.speak{ background:#eef3ff; border:1px solid #c7d6f5; color:var(--c1); border-radius:8px; padding:2px 8px; cursor:pointer; font-size:.9rem; margin-left:6px; vertical-align:middle; }
+body:not(.tts) .speak{ display:none; }
+
+/* ---------- molécules / constructeur ---------- */
+.stage{ background:#fbfcff; border:2px solid var(--line); border-radius:14px; padding:8px; text-align:center; overflow-x:auto; }
+svg.lewis{ max-width:100%; height:auto; user-select:none; }
+svg.lewis .hit-edge{ cursor:pointer; }
+svg.lewis .hit-edge:hover + .ghost, svg.lewis .hit-edge:hover{ stroke:rgba(47,111,214,.15); }
+svg.lewis .hit-atom{ cursor:pointer; }
+svg.lewis .hit-atom:hover{ fill:rgba(245,158,11,.15); }
+.gauges{ display:flex; flex-wrap:wrap; gap:8px; justify-content:center; margin-top:8px; }
+.gauge{ min-width:150px; background:white; border:2px solid var(--line); border-radius:10px; padding:6px 10px; text-align:left; font-size:.92rem; }
+.gauge b{ font-family:var(--title); }
+.gauge .bar{ height:10px; background:#e9ecf5; border-radius:6px; overflow:hidden; margin-top:4px; }
+.gauge .bar i{ display:block; height:100%; background:var(--orange); border-radius:6px; transition: width .3s; }
+.gauge.ok{ border-color:var(--ok); } .gauge.ok .bar i{ background:var(--ok); }
+.gauge.over{ border-color:var(--ko); } .gauge.over .bar i{ background:var(--ko); }
+.ctrl{ display:grid; grid-template-columns: repeat(auto-fill, minmax(230px,1fr)); gap:8px; margin-top:8px; }
+.ctrl .it{ display:flex; align-items:center; gap:8px; background:#f6f7fb; border-radius:10px; padding:6px 8px; font-size:.92rem; }
+.ctrl .it .nm{ flex:1; font-weight:700; }
+.ctrl .it .v{ min-width:58px; text-align:center; font-weight:800; color:var(--navy); }
+.pm{ width:38px; height:38px; border-radius:10px; border:2px solid var(--navy); background:white; color:var(--navy); font-weight:800; cursor:pointer; }
+.pm:disabled{ opacity:.35; cursor:not-allowed; }
+.help-click{ font-size:.9rem; color:var(--muted); margin:6px 0 0; }
+.missions{ display:flex; gap:6px; flex-wrap:wrap; margin:6px 0; }
+.missions span{ padding:4px 10px; border-radius:20px; background:#e9ecf5; font-weight:700; font-size:.9rem; }
+.missions span.done{ background:var(--okbg); color:var(--ok); }
+.missions span.cur{ background:var(--orange); color:#3b2400; }
+
+/* machine à ions */
+.ionmachine{ display:grid; grid-template-columns: 1fr 1.2fr; gap:14px; }
+@media (max-width:700px){ .ionmachine{ grid-template-columns:1fr; } }
+.atompick{ display:flex; flex-wrap:wrap; gap:6px; }
+.atompick button{ min-width:52px; min-height:46px; border-radius:10px; border:2px solid var(--line); background:white; font-weight:800; font-size:1.05rem; cursor:pointer; color:var(--navy); }
+.atompick button.on{ background:var(--navy); color:white; border-color:var(--navy); }
+.ioncard{ border-radius:14px; border:2px solid var(--line); padding:12px; background:white; text-align:center; }
+.ioncard .sym{ font-family:var(--title); font-size:3rem; color:var(--navy); line-height:1; }
+.ioncard .sym sup{ font-size:1.5rem; color:var(--c3); }
+.ioncard.ok{ border-color:var(--ok); background:var(--okbg); }
+.kv{ display:grid; grid-template-columns: auto 1fr; gap:4px 12px; text-align:left; margin-top:8px; font-size:.95rem; }
+.kv b{ color:var(--navy); }
+
+/* ---------- questions ---------- */
+.qhead{ display:flex; align-items:center; gap:10px; flex-wrap:wrap; }
+.dots{ display:flex; gap:5px; }
+.dots i{ width:14px; height:14px; border-radius:50%; background:#e1e4ee; display:inline-block; }
+.dots i.ok{ background:var(--ok); } .dots i.ko{ background:var(--ko); } .dots i.cur{ background:var(--orange); }
+.qtext{ font-size:1.12rem; font-weight:700; margin:10px 0; line-height:1.5; }
+.opts{ display:grid; gap:8px; }
+.opt{ text-align:left; padding:12px 14px; border-radius:12px; border:2px solid var(--line); background:white; cursor:pointer; font-weight:600; min-height:48px; }
+.opt:hover{ border-color:var(--c1); }
+.opt.sel{ border-color:var(--c1); background:#eef3ff; }
+.opt.good{ border-color:var(--ok); background:var(--okbg); }
+.opt.bad{ border-color:var(--ko); background:var(--kobg); }
+.numpad{ display:flex; flex-wrap:wrap; gap:8px; }
+.numpad button{ width:56px; height:56px; border-radius:12px; border:2px solid var(--line); background:white; font-weight:800; font-size:1.2rem; cursor:pointer; }
+.numpad button.sel{ border-color:var(--c1); background:#eef3ff; }
+.numpad button.good{ border-color:var(--ok); background:var(--okbg); }
+.numpad button.bad{ border-color:var(--ko); background:var(--kobg); }
+.hints{ display:flex; gap:8px; flex-wrap:wrap; margin:10px 0; }
+.hint{ background:#f1f7ea; border-left:4px solid var(--c2); border-radius:8px; padding:8px 12px; margin:6px 0; }
+.fb{ border-radius:12px; padding:10px 14px; margin:10px 0; font-weight:600; }
+.fb.ok{ background:var(--okbg); color:#1e5b2b; border:2px solid var(--ok); }
+.fb.ko{ background:var(--kobg); color:#7d1a1a; border:2px solid var(--ko); }
+.result{ text-align:center; }
+.result .big{ font-family:var(--title); font-size:2.6rem; color:var(--navy); }
+.door{ font-size:4rem; }
+.unlock{ animation: pop .6s ease; }
+@keyframes pop{ 0%{ transform:scale(.6); opacity:0;} 70%{ transform:scale(1.1);} 100%{ transform:scale(1); opacity:1;} }
+
+/* ---------- panneaux ---------- */
+.overlay{ position:fixed; inset:0; background:rgba(10,15,35,.6); z-index:50; display:none; align-items:flex-start; justify-content:center; padding:30px 12px; overflow:auto; }
+.overlay.open{ display:flex; }
+.panel{ background:white; border-radius:16px; max-width:720px; width:100%; padding:18px 20px; box-shadow:0 20px 60px rgba(0,0,0,.4); }
+.panel .close{ float:right; }
+table.t{ border-collapse:collapse; width:100%; margin:8px 0; font-size:.95rem; }
+table.t th, table.t td{ border:1.5px solid var(--line); padding:6px 8px; text-align:center; }
+table.t th{ background:#eef0f7; color:var(--navy); }
+.toggle{ display:flex; align-items:center; justify-content:space-between; gap:10px; padding:10px 0; border-bottom:1px solid var(--line); }
+.switch{ width:58px; height:32px; border-radius:20px; background:#c9cddb; border:none; position:relative; cursor:pointer; flex:0 0 auto; }
+.switch::after{ content:""; position:absolute; top:4px; left:4px; width:24px; height:24px; border-radius:50%; background:white; transition:left .2s; }
+.switch.on{ background:var(--ok); } .switch.on::after{ left:30px; }
+.pt{ border-collapse:separate; border-spacing:3px; margin:6px auto; }
+.pt td{ width:44px; height:40px; text-align:center; border-radius:6px; font-weight:800; color:var(--navy); position:relative; }
+.pt td small{ position:absolute; top:1px; left:4px; font-size:.6rem; color:#666; font-weight:600; }
+.pt .s{ background:#e8f0ff; } .pt .p{ background:#fdeaf1; } .pt .g{ background:#eef6cf; } .pt .e{ background:none; }
+.pt th{ font-size:.7rem; color:#666; }
+.profbar{ background:#c2410c; color:white; text-align:center; padding:6px; font-weight:800; }
+.sendstate{ margin-top:8px; font-weight:700; }
+.toast{ position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:var(--navy); color:white; padding:10px 18px; border-radius:12px; z-index:60; box-shadow:0 10px 30px rgba(0,0,0,.4); display:none; }
+.toast.show{ display:block; animation:pop .4s; }
+.sr{ position:absolute; left:-9999px; }
+</style>
+</head>
+<body>
+<div id="profbar" class="profbar" style="display:none">MODE PROFESSEUR — salles débloquées, résultats marqués [TEST PROF]</div>
+<header class="topbar">
+  <div class="brand">
+    <svg class="atom" viewBox="0 0 40 40" aria-hidden="true"><circle cx="14" cy="20" r="11" fill="none" stroke="#6ea0ff" stroke-width="2.5"/><circle cx="26" cy="20" r="11" fill="none" stroke="#ff6b9a" stroke-width="2.5"/><circle cx="20" cy="16" r="2.6" fill="#fff"/><circle cx="20" cy="24" r="2.6" fill="#fff"/></svg>
+    Le laboratoire scellé
+  </div>
+  <div class="sp"></div>
+  <div class="code" id="codebar" aria-label="Code de sortie"></div>
+  <span class="chrono" id="chrono" aria-label="Temps écoulé">0:00</span>
+  <button class="tbtn" id="bMap" title="Plan du laboratoire" aria-label="Plan du laboratoire">🗺️ <span class="lbl">Plan</span></button>
+  <button class="tbtn" id="bMemo" title="Aide-mémoire" aria-label="Aide-mémoire">📒 <span class="lbl">Aide-mémoire</span></button>
+  <button class="tbtn" id="bConf" title="Confort de lecture" aria-label="Confort de lecture">👓 <span class="lbl">Confort</span></button>
+</header>
+<main id="app"></main>
+
+<div class="overlay" id="ovMemo" role="dialog" aria-modal="true" aria-label="Aide-mémoire"><div class="panel" id="memoPanel"></div></div>
+<div class="overlay" id="ovConf" role="dialog" aria-modal="true" aria-label="Confort de lecture"><div class="panel" id="confPanel"></div></div>
+<div class="toast" id="toast" role="status"></div>
+
+<script>
+/* =====================================================================
+   LE LABORATOIRE SCELLÉ — escape game Duet, octet et modèle de Lewis
+   Seconde – physique-chimie.  Un seul fichier, aucune bibliothèque.
+   Mode professeur : ajouter #prof à la fin de l'adresse.
+   ===================================================================== */
+const JEU = 'duet_octet_lewis';
+const WORKER = 'https://resultatpolenord.lud-tek.workers.dev/';
+const SAVE_KEY = 'labo_lewis_v1';
+const CONF_KEY = 'labo_lewis_conf';
+const PROF = /prof/i.test(location.hash);
+const NQ = 6, SEUIL = 5;
+
+/* ---------- petits outils ---------- */
+const $ = s => document.querySelector(s);
+const esc = s => String(s).replace(/[&<>"]/g, c => ({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;'}[c]));
+const shuffle = a => { a = a.slice(); for (let i = a.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1)); [a[i], a[j]] = [a[j], a[i]]; } return a; };
+const pick = (a, n) => shuffle(a).slice(0, n);
+const fmtT = ms => { const s = Math.round(ms / 1000), m = Math.floor(s / 60); return m ? `${m} min ${String(s % 60).padStart(2, '0')} s` : `${s} s`; };
+function store(k, v) { try { localStorage.setItem(k, JSON.stringify(v)); } catch (e) {} }
+function load(k) { try { return JSON.parse(localStorage.getItem(k)); } catch (e) { return null; } }
+function toast(t) { const el = $('#toast'); el.textContent = t; el.classList.add('show'); clearTimeout(toast.t); toast.t = setTimeout(() => el.classList.remove('show'), 2600); }
+
+/* ---------- chimie ---------- */
+const VAL = { H: 1, C: 4, N: 5, O: 6, F: 7, Cl: 7 };
+const TARGET = el => el === 'H' ? 2 : 8;
+const EXPB = el => el === 'H' ? 1 : 8 - VAL[el];          // liaisons attendues
+const EXPLP = el => (VAL[el] - EXPB(el)) / 2;            // doublets non liants attendus
+const NOMS = { H: 'hydrogène', C: 'carbone', N: 'azote', O: 'oxygène', F: 'fluor', Cl: 'chlore' };
+
+// Molécules : atomes [id, élément, x, y] (unités de grille), liaisons [a, b, ordre solution]
+const M = {
+  H2:  { nom: 'dihydrogène', f: 'H₂', atoms: [['a','H',0,0],['b','H',1,0]], edges: [['a','b',1]] },
+  HCl: { nom: 'chlorure d’hydrogène', f: 'HCl', atoms: [['h','H',0,0],['cl','Cl',1.15,0]], edges: [['h','cl',1]] },
+  Cl2: { nom: 'dichlore', f: 'Cl₂', atoms: [['a','Cl',0,0],['b','Cl',1.25,0]], edges: [['a','b',1]] },
+  O2:  { nom: 'dioxygène', f: 'O₂', atoms: [['a','O',0,0],['b','O',1,0]], edges: [['a','b',2]] },
+  N2:  { nom: 'diazote', f: 'N₂', atoms: [['a','N',0,0],['b','N',1,0]], edges: [['a','b',3]] },
+  H2O: { nom: 'eau', f: 'H₂O', atoms: [['h1','H',-1,0],['o','O',0,0],['h2','H',1,0]], edges: [['h1','o',1],['o','h2',1]] },
+  NH3: { nom: 'ammoniac', f: 'NH₃', atoms: [['h1','H',-1,0],['n','N',0,0],['h2','H',1,0],['h3','H',0,1]], edges: [['h1','n',1],['n','h2',1],['n','h3',1]] },
+  CH4: { nom: 'méthane', f: 'CH₄', atoms: [['c','C',0,0],['h1','H',-1,0],['h2','H',1,0],['h3','H',0,-1],['h4','H',0,1]], edges: [['c','h1',1],['c','h2',1],['c','h3',1],['c','h4',1]] },
+  CO2: { nom: 'dioxyde de carbone', f: 'CO₂', atoms: [['o1','O',-1,0],['c','C',0,0],['o2','O',1,0]], edges: [['o1','c',2],['c','o2',2]] },
+  HCN: { nom: 'cyanure d’hydrogène', f: 'HCN', atoms: [['h','H',-1,0],['c','C',0,0],['n','N',1,0]], edges: [['h','c',1],['c','n',3]] },
+  C2H4:{ nom: 'éthène', f: 'C₂H₄', atoms: [['c1','C',0,0],['c2','C',1,0],['h1','H',-0.75,-0.75],['h2','H',-0.75,0.75],['h3','H',1.75,-0.75],['h4','H',1.75,0.75]], edges: [['c1','c2',2],['c1','h1',1],['c1','h2',1],['c2','h3',1],['c2','h4',1]] },
+  CH2O:{ nom: 'méthanal', f: 'CH₂O', atoms: [['c','C',0,0],['o','O',0,-1],['h1','H',-0.9,0.6],['h2','H',0.9,0.6]], edges: [['c','o',2],['c','h1',1],['c','h2',1]] },
+  GLY: { nom: 'glycine', f: 'C₂H₅NO₂', atoms: [['hn1','H',0,-1],['hn2','H',-1,0],['n','N',0,0],['c1','C',1,0],['hc1','H',1,-1],['hc2','H',1,1],['c2','C',2,0],['o1','O',2,-1],['o2','O',3,0],['ho','H',4,0]],
+         edges: [['n','hn1',1],['n','hn2',1],['n','c1',1],['c1','hc1',1],['c1','hc2',1],['c1','c2',1],['c2','o1',2],['c2','o2',1],['o2','ho',1]] }
+};
+const atomEl = (key, id) => M[key].atoms.find(a => a[0] === id)[1];
+function solution(key) {
+  const m = M[key], lps = {};
+  m.atoms.forEach(([id, el]) => lps[id] = EXPLP(el));
+  return { orders: m.edges.map(e => e[2]), lps, singles: {} };
+}
+function emptyState(key) {
+  const m = M[key], lps = {};
+  m.atoms.forEach(([id]) => lps[id] = 0);
+  return { orders: m.edges.map(() => 0), lps, singles: {} };
+}
+function bondsOf(key, st, id) { let b = 0; M[key].edges.forEach((e, i) => { if (e[0] === id || e[1] === id) b += st.orders[i]; }); return b; }
+function around(key, st, id) { return 2 * bondsOf(key, st, id) + 2 * (st.lps[id] || 0) + (st.singles[id] || 0); }
+function statusOf(key, st, id) { const n = around(key, st, id), t = TARGET(atomEl(key, id)); return n === t ? 'ok' : (n > t ? 'over' : 'under'); }
+function errList(er) { const max = 4; return er.slice(0, max).map(e => '• ' + e.msg).join('<br>') + (er.length > max ? `<br>• … et ${er.length - max} autre${er.length - max > 1 ? 's' : ''} erreur${er.length - max > 1 ? 's' : ''}` : ''); }
+function checkBuild(key, st) {
+  const errs = [];
+  M[key].atoms.forEach(([id, el]) => {
+    const b = bondsOf(key, st, id), lp = st.lps[id] || 0;
+    if (b !== EXPB(el)) errs.push({ id, msg: `${el} forme ${b} liaison${b > 1 ? 's' : ''} au lieu de ${EXPB(el)}` });
+    else if (lp !== EXPLP(el)) errs.push({ id, msg: `${el} porte ${lp} doublet${lp > 1 ? 's' : ''} non liant${lp > 1 ? 's' : ''} au lieu de ${EXPLP(el)}` });
+  });
+  return errs;
+}
+
+/* ---------- dessin d'un schéma de Lewis (SVG) ---------- */
+const COLS = { ok: '#2b8a3e', over: '#c92a2a', under: '#b26b00' };
+function drawLewis(key, st, o = {}) {
+  const m = M[key], U = o.unit || 78, pad = 46, P = {};
+  m.atoms.forEach(([id, el, x, y]) => P[id] = { el, x: x * U, y: y * U });
+  const xs = Object.values(P).map(p => p.x), ys = Object.values(P).map(p => p.y);
+  const mx = Math.min(...xs) - pad, my = Math.min(...ys) - pad;
+  const W = Math.max(...xs) - mx + pad, H = Math.max(...ys) - my + pad;
+  Object.values(P).forEach(p => { p.x -= mx; p.y -= my; });
+  const shrink = el => el.length > 1 ? 21 : 15;
+  let s = `<svg class="lewis" viewBox="0 0 ${W} ${H}" width="${Math.round(W * (o.scale || 1))}" role="img" aria-label="Schéma de Lewis : ${esc(m.nom)}">`;
+  // liaisons
+  m.edges.forEach((e, i) => {
+    const A = P[e[0]], B = P[e[1]], k = st.orders[i];
+    const dx = B.x - A.x, dy = B.y - A.y, L = Math.hypot(dx, dy), ux = dx / L, uy = dy / L, px = -uy, py = ux;
+    const a1 = shrink(A.el), b1 = shrink(B.el);
+    const x1 = A.x + ux * a1, y1 = A.y + uy * a1, x2 = B.x - ux * b1, y2 = B.y - uy * b1;
+    if (o.guides && k === 0) s += `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="#b9bfd2" stroke-width="2" stroke-dasharray="4 5"/>`;
+    const offs = { 1: [0], 2: [-4, 4], 3: [-6.5, 0, 6.5] }[k] || [];
+    const col = o.bondColor ? o.bondColor(i) : '#2b2b33';
+    offs.forEach(d => s += `<line x1="${x1 + px * d}" y1="${y1 + py * d}" x2="${x2 + px * d}" y2="${y2 + py * d}" stroke="${col}" stroke-width="2.6" stroke-linecap="round"/>`);
+    if (o.edgeClick) s += `<line class="hit-edge" data-edge="${i}" x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" stroke="transparent" stroke-width="22"><title>Liaison ${A.el}–${B.el} : clique pour changer</title></line>`;
+  });
+  // atomes
+  m.atoms.forEach(([id, el]) => {
+    const p = P[id];
+    if (o.highlight === id) s += `<circle cx="${p.x}" cy="${p.y}" r="24" fill="#ffe28a" stroke="#f59e0b" stroke-width="2.5"/>`;
+    if (o.selected === id) s += `<circle cx="${p.x}" cy="${p.y}" r="24" fill="#dbe7ff" stroke="#2f6fd6" stroke-width="2.5"/>`;
+    if (o.mark && o.mark[id]) s += `<circle cx="${p.x}" cy="${p.y}" r="25" fill="none" stroke="${o.mark[id]}" stroke-width="3"/>`;
+    const col = o.status ? COLS[statusOf(key, st, id)] : '#1d2b53';
+    s += `<text x="${p.x}" y="${p.y + 1}" font-size="27" font-weight="800" text-anchor="middle" dominant-baseline="central" fill="${col}" font-family="Nunito, sans-serif">${el}</text>`;
+    // doublets non liants (barres) et électrons célibataires (points)
+    const dirs = [];
+    m.edges.forEach(e => { if (e[0] === id || e[1] === id) { const q = P[e[0] === id ? e[1] : e[0]]; dirs.push(Math.atan2(q.y - p.y, q.x - p.x) * 180 / Math.PI); } });
+    const nlp = st.lps[id] || 0, ns = st.singles[id] || 0;
+    const ang = chooseAngles(dirs, nlp + ns);
+    ang.forEach((a, j) => {
+      const r = Math.PI * a / 180, c = Math.cos(r), sn = Math.sin(r);
+      const rad = 19 + (el.length > 1 ? 7 * Math.abs(c) : 0);
+      const cx = p.x + rad * c, cy = p.y + rad * sn;
+      if (j < nlp) s += `<line x1="${cx - 8 * sn}" y1="${cy + 8 * c}" x2="${cx + 8 * sn}" y2="${cy - 8 * c}" stroke="#d6336c" stroke-width="3" stroke-linecap="round"/>`;
+      else s += `<circle cx="${cx}" cy="${cy}" r="4.2" fill="#f59e0b" stroke="#7a4d00" stroke-width="1"/>`;
+    });
+    if (o.atomClick) s += `<circle class="hit-atom" data-atom="${id}" cx="${p.x}" cy="${p.y}" r="22" fill="transparent"><title>Atome ${el}</title></circle>`;
+  });
+  return s + '</svg>';
+}
+function chooseAngles(dirs, n) {
+  const cand = [-90, 90, 180, 0, -45, 45, 135, -135, -135 + 22, 22];
+  const dist = (a, b) => { let d = Math.abs(a - b) % 360; return d > 180 ? 360 - d : d; };
+  const used = dirs.slice(), out = [];
+  for (let k = 0; k < n; k++) {
+    let best = null, bd = -1;
+    cand.forEach(c => { if (out.includes(c)) return; const d = used.length ? Math.min(...used.map(u => dist(u, c))) : 180; if (d > bd + 0.01) { bd = d; best = c; } });
+    out.push(best); used.push(best);
+  }
+  return out;
+}
+
+/* ---------- état du jeu ---------- */
+function freshState() {
+  return {
+    eleve: null, start: null, elapsed: 0, cur: null,
+    salles: SALLES.map(() => ({ dec: false, ret: false, passed: false, attempts: [], time: 0, indices: 0, firstPct: null })),
+    final: { code: false, done: false, tries: 0, firstOk: null, time: 0, indices: 0 },
+    act: { sorties: 0, horsMs: 0, copies: 0, times: [], rapides: 0, apresSortie: 0, reponses: 0 },
+    sent: false
+  };
+}
+let S;
+let CONF = Object.assign({ dys: false, big: false, contrast: false, anim: true, chrono: true, tts: false }, load(CONF_KEY) || {});
+function save() { store(SAVE_KEY, S); }
+
+/* ---------- suivi de l'activité ---------- */
+let hiddenAt = null, qStart = null, qExit = false;
+document.addEventListener('visibilitychange', () => {
+  if (!S || !S.eleve) return;
+  if (document.hidden) { S.act.sorties++; hiddenAt = Date.now(); qExit = true; }
+  else if (hiddenAt) { S.act.horsMs += Date.now() - hiddenAt; hiddenAt = null; }
+  save();
+});
+document.addEventListener('copy', () => { if (S && S.eleve) { S.act.copies++; save(); } });
+function recordAnswer() {
+  if (!qStart) return;
+  const dt = (Date.now() - qStart) / 1000;
+  S.act.times.push(Math.round(dt)); S.act.reponses++;
+  if (dt < 3) S.act.rapides++;
+  if (qExit) S.act.apresSortie++;
+  qStart = null; qExit = false;
+}
+
+/* ---------- chrono ---------- */
+let tick = null, lastTick = null, salleEnter = null;
+function startClock() {
+  lastTick = Date.now();
+  clearInterval(tick);
+  tick = setInterval(() => {
+    const now = Date.now(); if (!document.hidden) S.elapsed += now - lastTick; lastTick = now;
+    const s = Math.floor(S.elapsed / 1000); $('#chrono').textContent = `${Math.floor(s / 60)}:${String(s % 60).padStart(2, '0')}`;
+    if (s % 5 === 0) save();
+  }, 1000);
+}
+function leaveSalle() {
+  if (salleEnter !== null && S.cur !== null) {
+    const dt = Date.now() - salleEnter;
+    if (S.cur === 'final') S.final.time += dt; else S.salles[S.cur].time += dt;
+  }
+  salleEnter = null;
+}
+
+/* ---------- lecture à voix haute ---------- */
+function speak(html) {
+  try {
+    const t = html.replace(/<sup>(.*?)<\/sup>/g, ' $1 ').replace(/<[^>]+>/g, ' ').replace(/₂/g, '2').replace(/₃/g, '3').replace(/₄/g, '4').replace(/₅/g, '5').replace(/–|—/g, ' ').replace(/\s+/g, ' ');
+    speechSynthesis.cancel();
+    const u = new SpeechSynthesisUtterance(t); u.lang = 'fr-FR'; u.rate = 0.95; speechSynthesis.speak(u);
+  } catch (e) { toast('Lecture à voix haute indisponible sur cet appareil.'); }
+}
+const SPK = []; function spk(html) { SPK.push(html); return `<button class="speak" data-spk="${SPK.length - 1}" title="Lire à voix haute">🔊 écouter</button>`; }
+document.addEventListener('click', e => { const b = e.target.closest('[data-spk]'); if (b) speak(SPK[+b.dataset.spk]); });
+
+/* =====================================================================
+   CONTENU DES SALLES
+   ===================================================================== */
+const OBS = (q, r) => ({ q, r });
+
+const SALLES = [
+  { id: 'coloc', titre: 'La colocation des électrons', ic: '🏠', lettre: 'O',
+    story: 'Première pièce : la salle des colocataires. Ici, les atomes ne donnent pas leurs électrons… ils les <b>partagent</b> ! Aide chaque atome à avoir autant d’électrons que le gaz noble le plus proche.',
+    obs: [
+      OBS('Après la liaison dans H₂, combien d’électrons entourent chaque atome d’hydrogène ? À quel gaz noble ressemble-t-il ?', 'Chaque H est entouré de <b>2 électrons</b> (les 2 électrons de la liaison comptent pour les deux atomes), comme l’<b>hélium</b> (1s²). C’est la <b>règle du duet</b>.'),
+      OBS('Dans H₂O, combien de liaisons l’oxygène forme-t-il ? Combien d’électrons l’entourent alors ?', '2 liaisons. Il est entouré de 2 × 2 (liaisons) + 2 × 2 (doublets non liants) = <b>8 électrons</b>, comme la couche externe du <b>néon</b>. C’est la <b>règle de l’octet</b>.'),
+      OBS('Compare le nombre d’électrons célibataires (points orange) de chaque atome au départ et le nombre de liaisons qu’il a formées. Que remarques-tu ?', 'Ils sont <b>égaux</b> : H (1 célibataire) forme 1 liaison, O (2) en forme 2, N (3) en forme 3. Un atome forme autant de liaisons qu’il lui <b>manque d’électrons</b> pour avoir 2 (H) ou 8 électrons.'),
+      OBS('Pour O₂, combien de fois as-tu cliqué sur la liaison ? Pourquoi ?', 'Deux fois : chaque O a 2 électrons célibataires, ils forment une <b>liaison double</b> (2 doublets liants).')
+    ],
+    retiens: `<p><b>Liaison covalente :</b> mise en commun de <b>2 électrons</b>, un apporté par chaque atome. On la représente par un tiret entre les deux atomes. Les 2 électrons comptent pour <b>les deux</b> atomes.</p>
+      <p><b>Doublet non liant :</b> paire d’électrons de valence qui ne participe pas à une liaison ; on le représente par un tiret placé autour d’un seul atome.</p>
+      <p>En formant des liaisons, les atomes obtiennent la configuration électronique du <b>gaz noble le plus proche</b> : la molécule est <b>plus stable</b> que les atomes isolés.</p>
+      <ul><li><b>Règle du duet :</b> l’hydrogène s’entoure de <b>2 électrons</b> (comme l’hélium).</li>
+      <li><b>Règle de l’octet :</b> C, N, O, Cl… s’entourent de <b>8 électrons</b> (comme le néon ou l’argon).</li></ul>
+      <p>Un atome forme autant de liaisons qu’il lui manque d’électrons : <b>H : 1, O : 2, N : 3, C : 4, Cl : 1</b>.</p>` },
+  { id: 'echange', titre: 'Donner, prendre ou partager ?', ic: '⚖️', lettre: 'C',
+    story: 'Deuxième pièce : la salle des échanges. Pour ressembler à un gaz noble, un atome a trois solutions : <b>perdre</b> des électrons, en <b>gagner</b>, ou les <b>partager</b>. Laquelle choisir ?',
+    obs: [
+      OBS('Combien d’électrons le sodium Na doit-il perdre pour ressembler au néon ? Quelle est la formule de l’ion obtenu ?', 'Il perd <b>1 électron</b> (11 → 10 électrons, comme le néon) : il devient l’ion <b>Na⁺</b>.'),
+      OBS('Et le chlore Cl ? Pourquoi ne perd-il pas 7 électrons ?', 'Il <b>gagne 1 électron</b> (17 → 18, comme l’argon) : ion <b>Cl⁻</b>. Perdre 7 électrons serait beaucoup plus difficile : un atome échange toujours le <b>moins</b> d’électrons possible.'),
+      OBS('Deux atomes de chlore se rencontrent. Peuvent-ils tous les deux gagner un électron ? Que font-ils alors ?', 'Non : aucun des deux ne veut donner d’électron ! Ils <b>mettent en commun</b> un électron chacun : ils forment la molécule <b>Cl₂</b> (une liaison covalente).'),
+      OBS('Quand un atome forme-t-il un ion, et quand forme-t-il une molécule ?', 'Il forme un <b>ion</b> quand il rencontre un atome prêt à lui prendre ou à lui donner des électrons (Na et Cl). Il forme une <b>molécule</b> quand les atomes ont tous besoin de gagner des électrons (H et H, Cl et Cl, O et H…) : ils les <b>partagent</b>.')
+    ],
+    retiens: `<p>Pour devenir plus stable, un atome cherche à obtenir la configuration électronique du <b>gaz noble le plus proche</b> (règle du duet ou de l’octet). Il a trois possibilités :</p>
+      <ul><li><b>Perdre</b> des électrons → il devient un <b>ion positif</b> (cation) : Na⁺, Mg²⁺, Al³⁺…</li>
+      <li><b>Gagner</b> des électrons → il devient un <b>ion négatif</b> (anion) : Cl⁻, F⁻, O²⁻…</li>
+      <li><b>Partager</b> des électrons avec d’autres atomes → il forme une <b>molécule</b> grâce à des liaisons covalentes : H₂, Cl₂, H₂O…</li></ul>
+      <p>Un atome échange ou partage toujours le <b>plus petit nombre d’électrons possible</b>.</p>` },
+  { id: 'labo', titre: 'Le labo de Lewis', ic: '🧪', lettre: 'T',
+    story: 'Troisième pièce : l’atelier du professeur Lewis. Sur la paillasse, des squelettes de molécules attendent leurs liaisons et leurs doublets. À toi de les compléter !',
+    obs: [
+      OBS('Construis CO₂ avec seulement des liaisons simples. Combien d’électrons entourent le carbone ? Que faut-il faire ?', 'Avec 2 liaisons simples, C n’a que 4 électrons. Il doit former <b>4 liaisons</b> : on trace deux <b>liaisons doubles</b> O=C=O, puis 2 doublets non liants sur chaque O.'),
+      OBS('Dans N₂, combien de doublets liants relient les deux atomes d’azote ?', '<b>3</b> (liaison triple). Chaque N porte aussi 1 doublet non liant : 2 × 3 + 2 × 1 = 8 électrons.'),
+      OBS('Dans quel ordre vaut-il mieux construire un schéma de Lewis ?', '1) une liaison simple entre chaque paire de voisins ; 2) des liaisons doubles ou triples pour les atomes à qui il manque des liaisons ; 3) des doublets non liants pour compléter jusqu’à 8 électrons (2 pour H).')
+    ],
+    retiens: `<p><b>Méthode pour construire un schéma de Lewis :</b></p>
+      <ol><li>Je trace une <b>liaison simple</b> entre chaque paire d’atomes voisins.</li>
+      <li>Je vérifie le nombre de liaisons de chaque atome (<b>H : 1, O : 2, N : 3, C : 4, Cl : 1</b>). S’il en manque à deux atomes voisins, je transforme leur liaison en liaison <b>double</b> ou <b>triple</b>.</li>
+      <li>J’ajoute les <b>doublets non liants</b> : O en porte 2, N en porte 1, Cl en porte 3, C et H n’en portent pas.</li>
+      <li>Je vérifie : électrons autour d’un atome = 2 × (doublets liants) + 2 × (doublets non liants) = <b>2 pour H</b>, <b>8</b> pour les autres.</li></ol>
+      <p>Une liaison double compte pour <b>2 doublets liants</b> (4 électrons), une liaison triple pour <b>3</b> (6 électrons).</p>` },
+  { id: 'detect', titre: 'Le détective des schémas', ic: '🔍', lettre: 'E',
+    story: 'Quatrième pièce : le bureau des archives. Un assistant maladroit a recopié les schémas du professeur… avec des erreurs ! Trouve l’atome qui ne respecte pas sa règle.',
+    obs: [
+      OBS('Dans ce schéma de l’eau, quel atome ne respecte pas sa règle ? Pourquoi ?', 'L’<b>oxygène</b> : 2 liaisons + 1 seul doublet non liant = 2 × 2 + 2 × 1 = <b>6 électrons</b> au lieu de 8. Il manque un doublet non liant.'),
+      OBS('Quelles sont les erreurs les plus fréquentes dans un schéma de Lewis ?', 'Oublier un doublet non liant ; mettre un doublet en trop ; donner 2 liaisons à un H ; oublier une liaison double ou triple ; mettre un doublet non liant sur un C ou sur un H.')
+    ],
+    retiens: `<p><b>Pour vérifier un schéma de Lewis</b>, on inspecte les atomes un par un :</p>
+      <ol><li>Je compte les <b>doublets liants</b> (tirets entre deux atomes) et les <b>doublets non liants</b> (tirets autour de l’atome).</li>
+      <li>Je calcule : électrons autour = 2 × liants + 2 × non liants.</li>
+      <li>Je compare : <b>2</b> pour H (duet), <b>8</b> pour C, N, O, Cl (octet).</li></ol>
+      <p>Un H ne forme toujours qu’<b>une seule</b> liaison et ne porte <b>jamais</b> de doublet non liant. Un C forme toujours 4 liaisons.</p>` },
+  { id: 'compteur', titre: 'Le compteur d’octet', ic: '🔢', lettre: 'T',
+    story: 'Cinquième pièce : la salle des compteurs. Les machines du laboratoire ne s’ouvrent qu’aux assistants capables de compter vite et juste les électrons autour d’un atome.',
+    obs: [
+      OBS('Clique sur le carbone de CO₂ : combien d’électrons l’entourent ?', '2 liaisons doubles = 4 doublets liants : 2 × 4 = <b>8 électrons</b> (octet).'),
+      OBS('Un atome d’hydrogène peut-il porter un doublet non liant ? Pourquoi ?', 'Non : avec sa liaison, il est déjà entouré de 2 électrons (duet). Un doublet en plus lui en donnerait 4.')
+    ],
+    retiens: `<div class="def" style="font-size:1.1rem"><b>Électrons autour d’un atome = 2 × (doublets liants) + 2 × (doublets non liants)</b></div>
+      <ul><li>Liaison simple : 1 doublet liant ; double : 2 ; triple : 3.</li>
+      <li>Les électrons d’une liaison comptent pour <b>les deux</b> atomes liés ; un doublet non liant ne compte que pour l’atome qui le porte.</li>
+      <li>Résultat attendu : <b>2</b> pour H, <b>8</b> pour C, N, O, Cl.</li></ul>` }
+];
+
+/* ---------- banques de questions ---------- */
+const Hgen = ['Relis l’étape « Retiens » de cette salle.', 'Ouvre l’aide-mémoire (📒 en haut) : le tableau des atomes donne la réponse.'];
+const BANK = {
+  coloc: () => pick([
+    { t: 'qcm', q: 'Une liaison covalente, c’est…', o: ['la mise en commun de 2 électrons, un apporté par chaque atome', 'le transfert d’un électron d’un atome à l’autre', 'la mise en commun de 2 protons', 'un électron resté seul sur la couche externe'], a: 0, h: ['Dans la salle, tu as cliqué sur un électron de chaque atome.', 'Le mot « co-valent » signifie « mis en commun ».'], x: 'Une liaison covalente = 2 électrons mis en commun, chaque atome en apporte un.' },
+    { t: 'num', q: 'Dans la molécule H₂, combien d’électrons entourent chaque atome d’hydrogène ?', a: 2, ch: [1, 2, 3, 4], h: ['Les 2 électrons de la liaison comptent pour les deux atomes.', 'L’hydrogène veut ressembler à l’hélium (1s²).'], x: 'Chaque H est entouré des 2 électrons de la liaison : règle du duet.' },
+    { t: 'qcm', q: 'L’atome d’hydrogène, dans une molécule, respecte…', o: ['la règle du duet (2 électrons)', 'la règle de l’octet (8 électrons)', 'aucune règle'], a: 0, h: ['Le gaz noble le plus proche de H est l’hélium.', 'L’hélium a 2 électrons.'], x: 'H s’entoure de 2 électrons comme l’hélium : règle du duet.' },
+    { t: 'num', q: 'L’oxygène possède 6 électrons de valence. Combien de liaisons covalentes forme-t-il ?', a: 2, ch: [1, 2, 3, 4], h: ['Combien lui manque-t-il d’électrons pour en avoir 8 ?', '8 − 6 = …'], x: 'Il lui manque 8 − 6 = 2 électrons : il forme 2 liaisons.' },
+    { t: 'num', q: 'L’azote possède 5 électrons de valence. Combien de liaisons covalentes forme-t-il ?', a: 3, ch: [1, 2, 3, 4], h: ['Combien lui manque-t-il d’électrons pour en avoir 8 ?', '8 − 5 = …'], x: 'Il lui manque 8 − 5 = 3 électrons : il forme 3 liaisons.' },
+    { t: 'num', q: 'Le carbone possède 4 électrons de valence. Combien de liaisons covalentes forme-t-il ?', a: 4, ch: [1, 2, 3, 4], h: ['Combien lui manque-t-il d’électrons pour en avoir 8 ?', '8 − 4 = …'], x: 'Il lui manque 8 − 4 = 4 électrons : il forme 4 liaisons.' },
+    { t: 'num', q: 'Le chlore possède 7 électrons de valence. Combien de liaisons covalentes forme-t-il ?', a: 1, ch: [1, 2, 3, 4], h: ['Combien lui manque-t-il d’électrons pour en avoir 8 ?', '8 − 7 = …'], x: 'Il lui manque 8 − 7 = 1 électron : il forme 1 liaison.' },
+    { t: 'num', q: 'Dans la molécule d’eau H₂O, combien d’électrons entourent l’atome d’oxygène ?', a: 8, ch: [2, 4, 6, 8, 10], h: ['O a 2 liaisons et 2 doublets non liants.', '2 × 2 + 2 × 2 = …'], x: '2 × 2 + 2 × 2 = 8 électrons : règle de l’octet.' },
+    { t: 'qcm', q: 'Les 2 électrons d’une liaison covalente comptent…', o: ['pour les deux atomes liés', 'seulement pour le plus gros atome', 'pour aucun des deux atomes'], a: 0, h: ['C’est une mise en commun.', 'Dans H₂, chaque H compte 2 électrons.'], x: 'Ils sont mis en commun : ils comptent pour les deux atomes.' },
+    { t: 'qcm', q: 'Pourquoi deux atomes d’hydrogène s’associent-ils pour former H₂ ?', o: ['Chacun est alors entouré de 2 électrons, comme l’hélium : ils sont plus stables', 'Pour former deux ions H⁺', 'Pour avoir 8 électrons chacun'], a: 0, h: ['Pense à la règle du duet.', 'Une molécule est plus stable que les atomes isolés.'], x: 'Chaque H obtient la configuration de l’hélium : la molécule est plus stable que les atomes isolés.' },
+    { t: 'qcm', q: 'Un doublet non liant, c’est…', o: ['une paire d’électrons de valence qui n’appartient qu’à un seul atome', 'une liaison entre deux atomes', 'un électron seul'], a: 0, h: ['« Non liant » : il ne lie pas deux atomes.', 'On le dessine par un tiret autour d’un seul atome.'], x: 'C’est une paire d’électrons de valence portée par un seul atome.' }
+  ], NQ),
+  echange: () => pick([
+    { t: 'qcm', q: 'Un atome de sodium Na (1 électron de valence) rencontre un atome de chlore. Que fait le sodium ?', o: ['Il perd 1 électron et devient Na⁺', 'Il gagne 7 électrons et devient Na⁷⁻', 'Il partage son électron avec un autre sodium', 'Il gagne 1 électron et devient Na⁻'], a: 0, h: ['Le gaz noble le plus proche du sodium est le néon (10 électrons).', 'Na a 11 électrons : le plus simple est d’en perdre un.'], x: 'Na perd 1 électron (11 → 10, comme le néon) : ion Na⁺.' },
+    { t: 'qcm', q: 'Face au sodium, que fait le chlore Cl (7 électrons de valence) ?', o: ['Il gagne 1 électron et devient Cl⁻', 'Il perd 7 électrons et devient Cl⁷⁺', 'Il perd 1 électron et devient Cl⁺', 'Il ne fait rien'], a: 0, h: ['Le gaz noble le plus proche du chlore est l’argon (18 électrons).', 'Cl a 17 électrons.'], x: 'Cl gagne 1 électron (17 → 18, comme l’argon) : ion Cl⁻.' },
+    { t: 'qcm', q: 'Deux atomes d’hydrogène se rencontrent. Que se passe-t-il ?', o: ['Ils mettent en commun leurs électrons : molécule H₂', 'L’un donne son électron à l’autre : H⁺ et H⁻', 'Rien : ils restent seuls'], a: 0, h: ['Les deux atomes ont besoin de la même chose.', 'Aucun n’a intérêt à donner son électron.'], x: 'Ils partagent leurs électrons : liaison covalente, molécule H₂.' },
+    { t: 'qcm', q: 'Quel ion forme le magnésium Mg (groupe 2) ?', o: ['Mg²⁺', 'Mg²⁻', 'Mg⁺', 'Mg⁶⁻'], a: 0, h: ['Groupe 2 : 2 électrons de valence.', 'Il est plus facile d’en perdre 2 que d’en gagner 6.'], x: 'Mg perd ses 2 électrons de valence : ion Mg²⁺.' },
+    { t: 'qcm', q: 'Quel ion forme l’aluminium Al (groupe 13) ?', o: ['Al³⁺', 'Al⁵⁻', 'Al³⁻', 'Al⁺'], a: 0, h: ['Groupe 13 : 3 électrons de valence.', 'Il est plus facile d’en perdre 3 que d’en gagner 5.'], x: 'Al perd 3 électrons : ion Al³⁺.' },
+    { t: 'qcm', q: 'Un atome d’oxygène rencontre deux atomes d’hydrogène. Que se passe-t-il ?', o: ['Ils partagent des électrons : molécule H₂O', 'L’oxygène prend les électrons des H : ions O²⁻ et H⁺', 'Rien ne se passe'], a: 0, h: ['O et H ont tous les deux besoin de gagner des électrons.', 'Pense à la salle des colocataires.'], x: 'Tous ont besoin de gagner des électrons : ils les partagent et forment H₂O.' },
+    { t: 'qcm', q: 'Deux atomes de chlore se rencontrent. Que font-ils ?', o: ['Ils mettent en commun une paire d’électrons : molécule Cl₂', 'L’un donne 7 électrons à l’autre', 'Ils deviennent deux ions Cl⁻'], a: 0, h: ['Les deux veulent gagner 1 électron.', 'Personne ne peut donner : il faut partager.'], x: 'Ils partagent un électron chacun : liaison covalente, molécule Cl₂.' },
+    { t: 'qcm', q: 'Quel ion forme le fluor F (groupe 17) ?', o: ['F⁻', 'F⁺', 'F⁷⁺', 'F²⁻'], a: 0, h: ['Groupe 17 : 7 électrons de valence.', 'Il lui manque 1 électron pour avoir l’octet.'], x: 'F gagne 1 électron : ion fluorure F⁻.' },
+    { t: 'num', q: 'Combien d’électrons possède l’ion Na⁺ (le sodium a Z = 11) ?', a: 10, ch: [9, 10, 11, 12], h: ['Na⁺ : le sodium a perdu 1 électron.', '11 − 1 = …'], x: '11 − 1 = 10 électrons, comme le néon.' },
+    { t: 'qcm', q: 'L’ion O²⁻ a la même configuration électronique que…', o: ['le néon', 'l’hélium', 'l’argon', 'le sodium'], a: 0, h: ['O a 8 électrons ; O²⁻ en a 2 de plus.', 'Quel gaz noble a 10 électrons ?'], x: 'O²⁻ a 10 électrons, comme le néon.' },
+    { t: 'qcm', q: 'Deux atomes d’azote se rencontrent. Que font-ils ?', o: ['Ils mettent en commun 3 paires d’électrons : molécule N₂ (liaison triple)', 'L’un donne 3 électrons à l’autre', 'Ils forment deux ions N³⁺'], a: 0, h: ['Chaque N a besoin de 3 électrons.', 'Ils ne peuvent pas se les donner : ils les partagent.'], x: 'Chacun met en commun 3 électrons : liaison triple N≡N.' }
+  ], NQ),
+  labo: () => {
+    const easy = pick(['H2O', 'NH3', 'CH4', 'HCl', 'Cl2'], 2), mid = pick(['O2', 'CO2', 'CH2O'], 2), hard = pick(['N2', 'HCN', 'C2H4'], 2);
+    return [...easy, ...mid, ...hard].map(k => ({ t: 'build', mol: k,
+      q: `Construis le schéma de Lewis de la molécule de ${M[k].nom} ${M[k].f}.`,
+      h: ['Nombre de liaisons à former : H : 1, O : 2, N : 3, C : 4, Cl : 1.', 'S’il manque des liaisons à deux voisins, transforme leur liaison en double ou triple. Complète ensuite avec des doublets non liants (O : 2, N : 1, Cl : 3).'] }));
+  },
+  detect: () => pick(DETECT, NQ).map(d => ({ t: 'detect', ...d, h: ['Pour chaque atome : électrons autour = 2 × liants + 2 × non liants.', 'Il faut 2 électrons pour H et 8 pour les autres atomes. Clique sur l’atome qui ne respecte pas sa règle.'] })),
+  compteur: () => {
+    const mols = ['H2O', 'NH3', 'CH4', 'CO2', 'N2', 'HCN', 'HCl', 'Cl2', 'O2', 'C2H4', 'CH2O'];
+    const types = shuffle(['e', 'e', 'l', 'l', 'nl', 'nl']);
+    const used = new Set();
+    return types.map(ty => {
+      let k, at, guard = 0;
+      do {
+        k = mols[Math.floor(Math.random() * mols.length)];
+        const cands = M[k].atoms.filter(a => ty === 'nl' ? a[1] !== 'H' : true);
+        at = cands[Math.floor(Math.random() * cands.length)][0];
+        guard++;
+      } while (used.has(k + at + ty) && guard < 50);
+      used.add(k + at + ty);
+      const el = atomEl(k, at), st = solution(k);
+      const ans = ty === 'e' ? around(k, st, at) : ty === 'l' ? bondsOf(k, st, at) : st.lps[at];
+      const lab = { e: 'Combien d’électrons entourent', l: 'Combien de doublets liants partent de', nl: 'Combien de doublets non liants porte' }[ty];
+      return { t: 'count', mol: k, at, ty, a: ans, ch: ty === 'e' ? [2, 4, 6, 8, 10] : [0, 1, 2, 3, 4],
+        q: `${lab} l’atome ${NOMS[el].startsWith('o') || NOMS[el].startsWith('a') || NOMS[el].startsWith('h') ? 'd’' : 'de '}${NOMS[el]} surligné dans la molécule de ${M[k].nom} ${M[k].f} ?`,
+        h: ty === 'e' ? ['Compte les tirets entre l’atome et ses voisins (une liaison double compte 2).', 'Électrons autour = 2 × liants + 2 × non liants.'] : ty === 'l' ? ['Compte les tirets qui relient cet atome à ses voisins.', 'Une liaison double compte pour 2 doublets liants, une triple pour 3.'] : ['Les doublets non liants sont les tirets roses autour de l’atome.', 'O en porte 2, N 1, Cl 3, C 0.'],
+        x: ty === 'e' ? `2 × ${bondsOf(k, st, at)} + 2 × ${st.lps[at]} = ${ans} électrons.` : ty === 'l' ? `${ans} doublet${ans > 1 ? 's' : ''} liant${ans > 1 ? 's' : ''}.` : `${ans} doublet${ans > 1 ? 's' : ''} non liant${ans > 1 ? 's' : ''}.` };
+    });
+  }
+};
+// schémas faux pour le détective : ordres de liaison et doublets affichés, atomes fautifs, explications
+const DETECT = [
+  { mol: 'H2O', orders: [1, 1], lps: { o: 1 }, bad: ['o'], o: ['O n’est entouré que de 6 électrons : il manque un doublet non liant', 'Chaque H devrait porter un doublet non liant', 'O devrait former 3 liaisons'], a: 0, q: 'Ce schéma de l’eau est faux. Clique sur l’atome qui ne respecte pas sa règle, puis choisis l’explication.' },
+  { mol: 'NH3', orders: [1, 1, 1], lps: { n: 2 }, bad: ['n'], o: ['N est entouré de 10 électrons : il a un doublet non liant en trop', 'N devrait former 4 liaisons', 'Un H devrait être relié par une liaison double'], a: 0, q: 'Ce schéma de l’ammoniac est faux. Clique sur l’atome fautif, puis choisis l’explication.' },
+  { mol: 'H2', orders: [2], lps: {}, bad: ['a', 'b'], o: ['Chaque H est entouré de 4 électrons : H ne forme qu’une seule liaison (duet)', 'Il manque des doublets non liants sur les H', 'Il faudrait une liaison triple'], a: 0, q: 'Ce schéma du dihydrogène est faux. Clique sur un atome fautif, puis choisis l’explication.' },
+  { mol: 'CO2', orders: [2, 1], lps: { o1: 2, o2: 3 }, bad: ['c'], o: ['C n’est entouré que de 6 électrons : il doit former 4 liaisons (deux liaisons doubles)', 'L’oxygène de droite a trop d’électrons', 'C devrait porter un doublet non liant'], a: 0, q: 'Ce schéma du dioxyde de carbone est faux. Clique sur l’atome fautif, puis choisis l’explication.' },
+  { mol: 'HCl', orders: [1], lps: { cl: 2 }, bad: ['cl'], o: ['Cl n’est entouré que de 6 électrons : il manque un doublet non liant', 'H devrait porter un doublet non liant', 'Il faudrait une liaison double entre H et Cl'], a: 0, q: 'Ce schéma du chlorure d’hydrogène est faux. Clique sur l’atome fautif, puis choisis l’explication.' },
+  { mol: 'CH4', orders: [1, 1, 1, 1], lps: { c: 1 }, bad: ['c'], o: ['C est entouré de 10 électrons : il ne doit pas porter de doublet non liant', 'Il manque une liaison au carbone', 'Chaque H devrait former 2 liaisons'], a: 0, q: 'Ce schéma du méthane est faux. Clique sur l’atome fautif, puis choisis l’explication.' },
+  { mol: 'HCN', orders: [1, 2], lps: { n: 2 }, bad: ['c'], o: ['C n’est entouré que de 6 électrons : la liaison entre C et N doit être triple', 'N a trop de doublets non liants', 'H devrait former une liaison double'], a: 0, q: 'Ce schéma du cyanure d’hydrogène est faux. Clique sur l’atome fautif, puis choisis l’explication.' },
+  { mol: 'Cl2', orders: [1], lps: { a: 3, b: 4 }, bad: ['b'], o: ['Le chlore de droite est entouré de 10 électrons : il a un doublet non liant en trop', 'Il faudrait une liaison double', 'Le chlore de gauche manque de doublets'], a: 0, q: 'Ce schéma du dichlore est faux. Clique sur l’atome fautif, puis choisis l’explication.' },
+  { mol: 'N2', orders: [3], lps: { a: 1, b: 2 }, bad: ['b'], o: ['L’azote de droite est entouré de 10 électrons : il a un doublet non liant en trop', 'Il faudrait une liaison double', 'Les azotes ne devraient pas porter de doublet'], a: 0, q: 'Ce schéma du diazote est faux. Clique sur l’atome fautif, puis choisis l’explication.' }
+];
+
+/* =====================================================================
+   NAVIGATION ET ÉCRANS
+   ===================================================================== */
+const app = $('#app');
+let VIEW = { name: 'home' };
+function go(v) { leaveSalle(); VIEW = v; if (v.name === 'salle' || v.name === 'final') { S.cur = v.name === 'final' ? 'final' : v.i; salleEnter = Date.now(); } else S.cur = null; save(); render(); window.scrollTo(0, 0); }
+function render() {
+  SPK.length = 0; renderCode();
+  ({ home: viewHome, map: viewMap, salle: viewSalle, final: viewFinal, bilan: viewBilan })[VIEW.name]();
+}
+function renderCode() {
+  const c = $('#codebar'); if (!S) { c.innerHTML = ''; return; }
+  c.innerHTML = SALLES.map((s, i) => `<span class="${S.salles[i].passed ? 'on' : ''}" title="Lettre de la salle ${i + 1}">${S.salles[i].passed ? s.lettre : '?'}</span>`).join('');
+}
+function unlocked(i) { return PROF || i === 0 || S.salles[i - 1].passed; }
+
+/* ---------- accueil ---------- */
+function viewHome() {
+  const saved = load(SAVE_KEY);
+  const canResume = saved && saved.eleve && !saved.sent;
+  app.innerHTML = `
+  <div class="hero"><h1>🔒 Le laboratoire scellé</h1>
+  <p>Berkeley, 1916. Tu es l’assistant(e) du professeur <b>Gilbert Lewis</b>, l’inventeur de la liaison covalente. Un courant d’air a claqué la porte : le laboratoire est <b>verrouillé</b> ! Pour sortir, ouvre les cinq salles et réunis les cinq lettres du code de sortie.</p></div>
+  ${canResume ? `<div class="card"><h2>Reprendre ma partie</h2><p>Une partie de <b>${esc(saved.eleve.prenom)} ${esc(saved.eleve.initiale)}.</b> (${esc(saved.eleve.classe)}) est enregistrée sur cet appareil.</p>
+    <div class="row"><button class="btn orange" id="bResume">▶ Reprendre</button><button class="btn ghost" id="bNew">Nouvelle partie</button></div></div>` : ''}
+  <div class="card" id="formCard" ${canResume ? 'style="display:none"' : ''}>
+    <h2>Qui es-tu ?</h2>
+    <div class="row" style="align-items:flex-start">
+      <div class="grow"><label class="f" for="fPre">Prénom</label><input type="text" id="fPre" autocomplete="off" maxlength="30"></div>
+      <div style="width:150px"><label class="f" for="fIni">Initiale du nom</label><input type="text" id="fIni" autocomplete="off" maxlength="1"></div>
+      <div style="width:170px"><label class="f" for="fCla">Classe</label><select id="fCla"><option value="">— choisir —</option><option>2nde 1</option><option>2nde 3</option><option value="autre">Autre</option></select></div>
+    </div>
+    <div id="autreBox" style="display:none"><label class="f" for="fAutre">Précise ta classe</label><input type="text" id="fAutre" maxlength="20"></div>
+    <p class="muted" id="formErr" style="color:var(--ko)"></p>
+    <button class="btn orange" id="bStart">Entrer dans le laboratoire →</button>
+  </div>
+  <div class="card"><h2>Comment ça marche ?</h2>
+    <ul>
+      <li>Chaque salle a <b>trois étapes</b> : 🔬 <b>Découvre</b> (tu manipules et tu notes tes réponses sur ta feuille), 📌 <b>Retiens</b> (l’essentiel du cours) et 🗝️ <b>Épreuve</b> (6 questions).</li>
+      <li>Il faut <b>au moins 5 bonnes réponses sur 6</b> pour ouvrir la porte et gagner une lettre du code. Sinon, tu recommences l’épreuve avec de nouvelles questions.</li>
+      <li>Une réponse validée ne peut plus être modifiée. Tu as <b>deux aides</b> par question, sans perte de points.</li>
+      <li>Le bouton 📒 <b>Aide-mémoire</b> rappelle les règles ; le bouton 👓 <b>Confort</b> permet de changer la police, la taille, le contraste ou d’écouter les textes.</li>
+      <li>Ta progression est enregistrée sur cet appareil. À la fin, tu envoies ton bilan à ton professeur. Il voit aussi le temps passé, les sorties de la page et les copies de texte : reste sur la page et réponds seul(e).</li>
+    </ul></div>`;
+  if (canResume) {
+    $('#bResume').onclick = () => { S = saved; startClock(); go({ name: S.final.done ? 'bilan' : 'map' }); };
+    $('#bNew').onclick = () => { if (confirm('Effacer la partie enregistrée et recommencer ?')) { $('#formCard').style.display = ''; $('#bNew').closest('.card').style.display = 'none'; } };
+  }
+  $('#fCla').onchange = () => $('#autreBox').style.display = $('#fCla').value === 'autre' ? '' : 'none';
+  $('#bStart').onclick = () => {
+    const pre = $('#fPre').value.trim(), ini = $('#fIni').value.trim().toUpperCase();
+    let cla = $('#fCla').value; if (cla === 'autre') cla = $('#fAutre').value.trim();
+    if (!pre || !ini || !cla) { $('#formErr').textContent = 'Remplis ton prénom, l’initiale de ton nom et ta classe.'; return; }
+    S = freshState(); S.eleve = { prenom: pre, initiale: ini.charAt(0), classe: cla }; S.start = Date.now();
+    startClock(); go({ name: 'map' });
+  };
+}
+
+/* ---------- plan du laboratoire ---------- */
+function viewMap() {
+  const allPassed = S.salles.every(s => s.passed);
+  app.innerHTML = `
+  <div class="hero"><h1>🗺️ Plan du laboratoire</h1><p>Bonjour ${esc(S.eleve.prenom)} ! Ouvre les salles dans l’ordre. Chaque porte ouverte te donne une lettre du code de sortie.</p></div>
+  <div class="map">
+    ${SALLES.map((s, i) => {
+      const st = S.salles[i], lk = !unlocked(i);
+      return `<button class="room ${st.passed ? 'done' : ''} ${lk ? 'locked' : ''} ${!st.passed && !lk ? 'cur' : ''}" data-room="${i}" ${lk ? 'aria-disabled="true"' : ''}>
+        <div class="lt">${st.passed ? s.lettre : '?'}</div>
+        <div class="ic">${lk ? '🔒' : s.ic}</div><h3>Salle ${i + 1} · ${s.titre}</h3>
+        <div class="st" style="color:${st.passed ? 'var(--ok)' : lk ? 'var(--muted)' : 'var(--warn)'}">${st.passed ? '✔ Porte ouverte' : lk ? 'Verrouillée' : 'À explorer'}</div></button>`;
+    }).join('')}
+    <button class="room final ${S.final.done ? 'done' : ''} ${!allPassed && !PROF ? 'locked' : ''}" data-room="final">
+      <div class="ic">${allPassed || PROF ? '🚪' : '🔒'}</div><h3>La porte de sortie</h3>
+      <div class="st">${S.final.done ? '✔ Tu es sorti(e) !' : allPassed ? 'Entre le code et construis la dernière molécule' : 'Réunis les 5 lettres'}</div></button>
+  </div>
+  ${S.final.done ? `<div class="card" style="text-align:center"><button class="btn orange" id="bBil">Voir mon bilan →</button></div>` : ''}`;
+  app.querySelectorAll('[data-room]').forEach(b => b.onclick = () => {
+    const r = b.dataset.room;
+    if (r === 'final') { if (allPassed || PROF) go({ name: 'final' }); else toast('Il te faut d’abord les 5 lettres du code.'); return; }
+    const i = +r; if (!unlocked(i)) { toast('Cette porte est encore verrouillée.'); return; }
+    const st = S.salles[i];
+    go({ name: 'salle', i, step: st.passed ? 'ret' : (st.ret ? 'ep' : st.dec ? 'ret' : 'dec') });
+  });
+  const bb = $('#bBil'); if (bb) bb.onclick = () => go({ name: 'bilan' });
+}
+
+/* ---------- salle : structure commune ---------- */
+function viewSalle() {
+  const i = VIEW.i, s = SALLES[i], st = S.salles[i];
+  const stepBtn = (k, lab, en, ok) => `<button class="step ${VIEW.step === k ? 'on' : ''} ${ok ? 'ok' : ''}" data-step="${k}" ${en ? '' : 'disabled'}>${lab}</button>`;
+  app.innerHTML = `
+  <div class="card">
+    <div class="row"><div class="grow"><h1>${s.ic} Salle ${i + 1} · ${s.titre}</h1></div><button class="btn small ghost" id="bBack">← Plan</button></div>
+    <div class="story">${s.story}${spk(s.story)}</div>
+    <div class="steps">${stepBtn('dec', '🔬 1. Découvre', true, st.dec)}${stepBtn('ret', '📌 2. Retiens', st.dec || PROF, st.ret)}${stepBtn('ep', '🗝️ 3. Épreuve', st.ret || PROF, st.passed)}</div>
+  </div>
+  <div id="zone"></div>`;
+  $('#bBack').onclick = () => go({ name: 'map' });
+  app.querySelectorAll('[data-step]').forEach(b => b.onclick = () => { VIEW.step = b.dataset.step; VIEW.ep = null; render(); });
+  const z = $('#zone');
+  if (VIEW.step === 'dec') DECOUVRE[s.id](z, i);
+  else if (VIEW.step === 'ret') viewRetiens(z, i);
+  else viewEpreuve(z, i);
+}
+function obsHTML(i) {
+  return `<div class="card"><h2>📝 Sur ta feuille</h2><p class="muted">Réponds d’abord sur ta feuille, puis clique pour vérifier.</p>
+    ${SALLES[i].obs.map((o, k) => `<div class="obs" id="obs${k}"><div class="q">${k + 1}. ${o.q} ${spk(o.q)}</div>
+    <button class="btn small ghost" data-obs="${k}" style="margin-top:6px">Voir la réponse</button><div class="rep">${o.r}</div></div>`).join('')}
+    <div style="margin-top:10px"><button class="btn orange" id="bDecDone">J’ai fini de découvrir → Retiens</button></div></div>`;
+}
+function bindObs(i) {
+  app.querySelectorAll('[data-obs]').forEach(b => b.onclick = () => { b.parentElement.classList.add('open'); b.remove(); });
+  $('#bDecDone').onclick = () => { S.salles[i].dec = true; save(); VIEW.step = 'ret'; render(); };
+}
+function viewRetiens(z, i) {
+  const s = SALLES[i];
+  z.innerHTML = `<div class="card retiens"><h3>📌 L’essentiel ${spk(s.retiens)}</h3>${s.retiens}</div>
+  <div class="card" style="text-align:center">${S.salles[i].passed ? '<p>✔ Tu as déjà ouvert cette porte. Tu peux relire l’essentiel ou refaire l’épreuve pour t’entraîner (le score enregistré ne change pas).</p>' : ''}
+    <button class="btn orange" id="bRetDone">J’ai lu et compris → Épreuve 🗝️</button></div>`;
+  $('#bRetDone').onclick = () => { S.salles[i].ret = true; save(); VIEW.step = 'ep'; VIEW.ep = null; render(); };
+}
+
+/* ---------- constructeur / manipulation (composant commun) ---------- */
+// mode : 'build' (constructeur), 'coloc' (partage d'électrons), 'inspect' (clic = détail), 'detect' (clic = choix), 'view'
+function builderHTML(key, st, mode, extra = {}) {
+  const o = { guides: mode === 'build' || mode === 'coloc', edgeClick: (mode === 'build' || mode === 'coloc') && !extra.locked,
+    atomClick: (mode === 'build' && !extra.locked) || mode === 'inspect' || (mode === 'detect' && !extra.locked),
+    status: mode === 'build' || mode === 'coloc', selected: extra.selected, highlight: extra.highlight, mark: extra.mark, scale: extra.scale };
+  let h = `<div class="stage">${drawLewis(key, st, o)}</div>`;
+  if (mode === 'build') {
+    h += `<p class="help-click">Clique sur une <b>liaison en pointillés</b> pour passer de 0 à 1, 2 ou 3 liaisons ; clique sur un <b>atome</b> pour ajouter un doublet non liant. Tu peux aussi utiliser les boutons ci-dessous.</p>`;
+    h += `<div class="ctrl">${M[key].edges.map((e, i) => `<div class="it"><span class="nm">Liaison ${atomEl(key, e[0])}–${atomEl(key, e[1])}${dupLabel(key, e)}</span>
+      <button class="pm" data-dedge="${i}" data-d="-1" ${extra.locked || st.orders[i] === 0 ? 'disabled' : ''} aria-label="moins">−</button>
+      <span class="v">${['aucune', 'simple', 'double', 'triple'][st.orders[i]]}</span>
+      <button class="pm" data-dedge="${i}" data-d="1" ${extra.locked || st.orders[i] === 3 ? 'disabled' : ''} aria-label="plus">+</button></div>`).join('')}
+      ${M[key].atoms.filter(a => a[1] !== 'H' || (st.lps[a[0]] || 0) > 0).map(([id, el]) => `<div class="it"><span class="nm">Doublets non liants sur ${el}${dupAtom(key, id)}</span>
+      <button class="pm" data-dlp="${id}" data-d="-1" ${extra.locked || !st.lps[id] ? 'disabled' : ''} aria-label="moins">−</button>
+      <span class="v">${st.lps[id] || 0}</span>
+      <button class="pm" data-dlp="${id}" data-d="1" ${extra.locked || st.lps[id] >= 4 ? 'disabled' : ''} aria-label="plus">+</button></div>`).join('')}</div>`;
+  }
+  if (mode === 'build' || mode === 'coloc') h += gaugesHTML(key, st, mode);
+  return h;
+}
+function dupLabel(key, e) { const same = M[key].edges.filter(f => atomEl(key, f[0]) + atomEl(key, f[1]) === atomEl(key, e[0]) + atomEl(key, e[1])); return same.length > 1 ? ` (${same.indexOf(e) + 1})` : ''; }
+function dupAtom(key, id) { const el = atomEl(key, id), same = M[key].atoms.filter(a => a[1] === el); return same.length > 1 ? ` (${same.findIndex(a => a[0] === id) + 1})` : ''; }
+function gaugesHTML(key, st, mode) {
+  return `<div class="gauges">${M[key].atoms.map(([id, el]) => {
+    const n = around(key, st, id), t = TARGET(el), cls = n === t ? 'ok' : n > t ? 'over' : '';
+    return `<div class="gauge ${cls}"><b>${el}${dupAtom(key, id)}</b> : ${n} / ${t} électrons ${n === t ? '✔' : n > t ? '⚠ trop' : ''}
+      ${mode === 'coloc' ? `<br><small>célibataires : ${st.singles[id] || 0}</small>` : ''}<div class="bar"><i style="width:${Math.min(100, 100 * n / t)}%"></i></div></div>`;
+  }).join('')}</div>`;
+}
+function bindBuilder(container, key, st, mode, onChange, extra = {}) {
+  container.onclick = e => {
+    const ed = e.target.closest('[data-edge]'), at = e.target.closest('[data-atom]'), de = e.target.closest('[data-dedge]'), dl = e.target.closest('[data-dlp]');
+    if (mode === 'build' && !extra.locked) {
+      if (ed) { const i = +ed.dataset.edge; st.orders[i] = (st.orders[i] + 1) % 4; onChange(); }
+      else if (de) { const i = +de.dataset.dedge; st.orders[i] = Math.max(0, Math.min(3, st.orders[i] + +de.dataset.d)); onChange(); }
+      else if (dl) { const id = dl.dataset.dlp; st.lps[id] = Math.max(0, Math.min(4, (st.lps[id] || 0) + +dl.dataset.d)); onChange(); }
+      else if (at) { const id = at.dataset.atom; st.lps[id] = ((st.lps[id] || 0) + 1) % 4; onChange(); }
+    } else if (mode === 'coloc' && ed) {
+      const i = +ed.dataset.edge, [a, b] = M[key].edges[i];
+      if ((st.singles[a] || 0) > 0 && (st.singles[b] || 0) > 0) { st.orders[i]++; st.singles[a]--; st.singles[b]--; onChange(); }
+      else toast('Pour former une liaison, chaque atome doit encore avoir un électron célibataire (point orange).');
+    } else if ((mode === 'inspect' || mode === 'detect') && at && !extra.locked) onChange(at.dataset.atom);
+  };
+}
+
+/* ---------- DÉCOUVRE : une fonction par salle ---------- */
+const COLOC_MISSIONS = ['H2', 'HCl', 'H2O', 'NH3', 'O2'];
+function colocState(key) {
+  const st = emptyState(key);
+  M[key].atoms.forEach(([id, el]) => { const s0 = el === 'H' ? 1 : 8 - VAL[el]; st.singles[id] = s0; st.lps[id] = (VAL[el] - s0) / 2; });
+  return st;
+}
+const DECOUVRE = {
+  coloc(z, i) {
+    if (!VIEW.coloc) VIEW.coloc = { k: 0, st: colocState(COLOC_MISSIONS[0]), done: [] };
+    const C = VIEW.coloc, key = COLOC_MISSIONS[C.k];
+    const complete = M[key].atoms.every(([id]) => statusOf(key, C.st, id) === 'ok' && !C.st.singles[id]);
+    z.innerHTML = `<div class="card"><h2>🔬 Fabrique des molécules en partageant des électrons</h2>
+      <div class="missions">${COLOC_MISSIONS.map((k, j) => `<span class="${C.done.includes(k) ? 'done' : j === C.k ? 'cur' : ''}">${C.done.includes(k) ? '✔ ' : ''}${M[k].f}</span>`).join('')}</div>
+      <p><b>Mission ${C.k + 1} : la molécule de ${M[key].nom} ${M[key].f}.</b> Les <span style="color:#d6336c;font-weight:800">tirets roses</span> sont des doublets d’électrons déjà formés ; les <span style="color:#b26b00;font-weight:800">points orange</span> sont des électrons <b>célibataires</b>. Clique sur une liaison en pointillés : chaque atome y met en commun un électron célibataire.</p>
+      <div id="bz">${builderHTML(key, C.st, 'coloc')}</div>
+      <div id="msg">${complete ? `<div class="fb ok unlock">✔ Bravo ! Tous les atomes ont la configuration d’un gaz noble : la molécule ${M[key].f} est stable.</div>` : ''}</div>
+      <div class="row"><button class="btn small ghost" id="bReset">↺ Séparer les atomes</button>
+      ${complete && C.k < COLOC_MISSIONS.length - 1 ? `<button class="btn green" id="bNext">Molécule suivante →</button>` : ''}
+      ${C.k > 0 ? `<button class="btn small ghost" id="bPrev">← Molécule précédente</button>` : ''}</div></div>
+      ${C.done.length >= 4 || S.salles[i].dec || PROF ? obsHTML(i) : `<div class="card muted">Termine au moins 4 molécules pour accéder aux questions de découverte.</div>`}`;
+    if (complete && !C.done.includes(key)) { C.done.push(key); render(); return; }
+    bindBuilder($('#bz'), key, C.st, 'coloc', () => render());
+    $('#bReset').onclick = () => { C.st = colocState(key); render(); };
+    const bn = $('#bNext'); if (bn) bn.onclick = () => { C.k++; C.st = colocState(COLOC_MISSIONS[C.k]); render(); };
+    const bp = $('#bPrev'); if (bp) bp.onclick = () => { C.k--; C.st = colocState(COLOC_MISSIONS[C.k]); render(); };
+    if ($('#bDecDone')) bindObs(i);
+  },
+  echange(z, i) {
+    const ATS = [['H', 1], ['Li', 3], ['O', 8], ['F', 9], ['Na', 11], ['Mg', 12], ['Al', 13], ['Cl', 17]];
+    if (!VIEW.ion) VIEW.ion = { el: 'Na', d: 0 };
+    const I = VIEW.ion, Z = ATS.find(a => a[0] === I.el)[1], ne = Z + I.d;
+    const ch = -I.d, chTxt = ch === 0 ? '' : (Math.abs(ch) > 1 ? Math.abs(ch) : '') + (ch > 0 ? '+' : '−');
+    const noble = { 2: 'l’hélium (He)', 10: 'le néon (Ne)', 18: 'l’argon (Ar)' }[ne];
+    z.innerHTML = `<div class="card"><h2>🔬 La machine à ions</h2>
+      <p>Choisis un atome, puis retire ou ajoute des électrons. Le but : obtenir le même nombre d’électrons qu’un <b>gaz noble</b> (2, 10 ou 18), en échangeant <b>le moins d’électrons possible</b>.</p>
+      <div class="ionmachine"><div>
+        <div class="atompick">${ATS.map(([e]) => `<button data-el="${e}" class="${e === I.el ? 'on' : ''}">${e}</button>`).join('')}</div>
+        <div class="row" style="margin-top:12px"><button class="btn" id="bMinus" ${ne <= 0 || I.d <= -3 ? 'disabled' : ''}>➖ Retirer un électron</button><button class="btn" id="bPlus" ${I.d >= 3 ? 'disabled' : ''}>➕ Ajouter un électron</button></div>
+        <p class="muted" style="margin-top:8px">Électrons échangés : <b>${Math.abs(I.d)}</b> ${I.d < 0 ? '(perdus)' : I.d > 0 ? '(gagnés)' : ''}</p>
+      </div>
+      <div class="ioncard ${noble ? 'ok' : ''}"><div class="sym">${I.el}<sup>${chTxt}</sup></div>
+        <div class="kv"><b>Protons (Z)</b><span>${Z}</span><b>Électrons</b><span>${ne}</span><b>Configuration</b><span>${config(ne)}</span>
+        <b>Nature</b><span>${ch === 0 ? 'atome (neutre)' : ch > 0 ? 'ion positif (cation)' : 'ion négatif (anion)'}</span></div>
+        <p style="margin-top:8px;font-weight:800;color:${noble ? 'var(--ok)' : 'var(--warn)'}">${noble ? `✔ Même configuration que ${noble} : stable !` : '✖ Pas encore la configuration d’un gaz noble.'}</p></div></div></div>
+      <div class="card"><h2>🤝 Et quand deux atomes ont tous les deux besoin d’électrons ?</h2>
+        <p>Deux atomes de chlore ont chacun besoin de <b>gagner</b> 1 électron. Aucun ne peut donner à l’autre… Alors ils <b>mettent en commun</b> un électron chacun : c’est la liaison covalente de la salle 1 !</p>
+        <div class="stage">${drawLewis('Cl2', solution('Cl2'), { unit: 80 })}</div></div>
+      ${obsHTML(i)}`;
+    z.querySelectorAll('[data-el]').forEach(b => b.onclick = () => { I.el = b.dataset.el; I.d = 0; render(); });
+    $('#bMinus').onclick = () => { I.d--; render(); };
+    $('#bPlus').onclick = () => { I.d++; render(); };
+    bindObs(i);
+  },
+  labo(z, i) {
+    const LIST = ['H2O', 'NH3', 'CH4', 'CO2', 'N2', 'HCN'];
+    if (!VIEW.lab) VIEW.lab = { k: 'H2O', st: emptyState('H2O'), msg: '' };
+    const L = VIEW.lab;
+    z.innerHTML = `<div class="card"><h2>🔬 L’établi : construis librement</h2>
+      <div class="atompick">${LIST.map(k => `<button data-mk="${k}" class="${k === L.k ? 'on' : ''}">${M[k].f}</button>`).join('')}</div>
+      <p style="margin-top:8px"><b>Molécule de ${M[L.k].nom} ${M[L.k].f}.</b> La couleur de chaque symbole t’aide : <span style="color:${COLS.under};font-weight:800">orange</span> = pas assez d’électrons, <span style="color:${COLS.ok};font-weight:800">vert</span> = règle respectée, <span style="color:${COLS.over};font-weight:800">rouge</span> = trop d’électrons.</p>
+      <div id="bz">${builderHTML(L.k, L.st, 'build')}</div>
+      <div class="row" style="margin-top:8px"><button class="btn green" id="bCheck">Vérifier mon schéma</button><button class="btn small ghost" id="bClear">↺ Effacer</button></div>
+      <div id="msg">${L.msg}</div></div>${obsHTML(i)}`;
+    z.querySelectorAll('[data-mk]').forEach(b => b.onclick = () => { L.k = b.dataset.mk; L.st = emptyState(L.k); L.msg = ''; render(); });
+    bindBuilder($('#bz'), L.k, L.st, 'build', () => { L.msg = ''; render(); });
+    $('#bClear').onclick = () => { L.st = emptyState(L.k); L.msg = ''; render(); };
+    $('#bCheck').onclick = () => { const er = checkBuild(L.k, L.st); L.msg = er.length ? `<div class="fb ko">À corriger :<br>${errList(er)}</div>` : `<div class="fb ok">✔ Schéma de Lewis correct !</div>`; render(); };
+    bindObs(i);
+  },
+  detect(z, i) {
+    if (!VIEW.det) VIEW.det = { k: 0, sel: null };
+    const EX = [DETECT[0], DETECT[5]], D = VIEW.det, d = EX[D.k];
+    const st = { orders: d.orders.slice(), lps: Object.assign({}, d.lps), singles: {} };
+    let info = '';
+    if (D.sel) {
+      const el = atomEl(d.mol, D.sel), b = bondsOf(d.mol, st, D.sel), lp = st.lps[D.sel] || 0, n = 2 * b + 2 * lp, t = TARGET(el);
+      info = `<div class="fb ${n === t ? 'ok' : 'ko'}"><b>${el}</b> : ${b} doublet${b > 1 ? 's' : ''} liant${b > 1 ? 's' : ''} + ${lp} doublet${lp > 1 ? 's' : ''} non liant${lp > 1 ? 's' : ''} → 2 × ${b} + 2 × ${lp} = <b>${n} électrons</b>. ${n === t ? `✔ Règle ${t === 2 ? 'du duet' : 'de l’octet'} respectée.` : `✖ Il en faudrait ${t} : c’est l’atome fautif !`}</div>`;
+    }
+    z.innerHTML = `<div class="card"><h2>🔬 Inspecte les atomes</h2>
+      <p>Schéma ${D.k + 1}/2 : la molécule de <b>${M[d.mol].nom} ${M[d.mol].f}</b> recopiée par l’assistant. <b>Clique sur chaque atome</b> pour compter les électrons qui l’entourent.</p>
+      <div id="bz">${builderHTML(d.mol, st, 'inspect', { selected: D.sel })}</div><div>${info}</div>
+      <div class="row">${D.k === 0 ? '<button class="btn small ghost" id="bOther">Schéma suivant →</button>' : '<button class="btn small ghost" id="bOther">← Schéma précédent</button>'}</div></div>${obsHTML(i)}`;
+    bindBuilder($('#bz'), d.mol, st, 'inspect', id => { D.sel = id; render(); });
+    $('#bOther').onclick = () => { D.k = 1 - D.k; D.sel = null; render(); };
+    bindObs(i);
+  },
+  compteur(z, i) {
+    const LIST = ['CO2', 'H2O', 'NH3', 'N2', 'HCN', 'C2H4', 'CH2O'];
+    if (!VIEW.cpt) VIEW.cpt = { k: 'CO2', sel: null };
+    const C = VIEW.cpt, st = solution(C.k);
+    let info = '<p class="muted">Clique sur un atome du schéma.</p>';
+    if (C.sel) {
+      const el = atomEl(C.k, C.sel), b = bondsOf(C.k, st, C.sel), lp = st.lps[C.sel];
+      info = `<div class="fb ok"><b>${el}</b> : ${b} doublet${b > 1 ? 's' : ''} liant${b > 1 ? 's' : ''} et ${lp} doublet${lp > 1 ? 's' : ''} non liant${lp > 1 ? 's' : ''} → 2 × ${b} + 2 × ${lp} = <b>${2 * b + 2 * lp} électrons</b> (${el === 'H' ? 'duet' : 'octet'}).</div>`;
+    }
+    z.innerHTML = `<div class="card"><h2>🔬 La machine à compter</h2>
+      <div class="atompick">${LIST.map(k => `<button data-mk="${k}" class="${k === C.k ? 'on' : ''}">${M[k].f}</button>`).join('')}</div>
+      <p style="margin-top:8px"><b>${M[C.k].nom} ${M[C.k].f}</b> — clique sur un atome pour voir le détail du calcul.</p>
+      <div id="bz">${builderHTML(C.k, st, 'inspect', { selected: C.sel })}</div>${info}</div>${obsHTML(i)}`;
+    z.querySelectorAll('[data-mk]').forEach(b => b.onclick = () => { C.k = b.dataset.mk; C.sel = null; render(); });
+    bindBuilder($('#bz'), C.k, st, 'inspect', id => { C.sel = id; render(); });
+    bindObs(i);
+  }
+};
+function config(n) {
+  const sub = [['1s', 2], ['2s', 2], ['2p', 6], ['3s', 2], ['3p', 6]]; let r = [], left = n;
+  for (const [s, c] of sub) { if (left <= 0) break; const k = Math.min(c, left); r.push(`${s}<sup>${k}</sup>`); left -= k; }
+  return r.join(' ') || '—';
+}
+
+/* ---------- ÉPREUVE (commune à toutes les salles) ---------- */
+function viewEpreuve(z, i) {
+  const s = SALLES[i], st = S.salles[i];
+  if (!VIEW.ep) {
+    z.innerHTML = `<div class="card result"><div class="door">🚪</div><h2>Épreuve de la salle ${i + 1}</h2>
+      <p>6 questions. Il faut <b>au moins ${SEUIL} bonnes réponses</b> pour ouvrir la porte.${st.attempts.length ? ` Tentatives déjà faites : ${st.attempts.length}.` : ''}</p>
+      ${st.passed ? '<p class="muted">Porte déjà ouverte : cette épreuve est un entraînement, ton score enregistré ne change pas.</p>' : ''}
+      <button class="btn orange" id="bGo">Commencer l’épreuve</button></div>`;
+    $('#bGo').onclick = () => { VIEW.ep = { qs: BANK[s.id](), k: 0, res: [], ans: null, done: false, hints: 0, training: st.passed }; render(); };
+    return;
+  }
+  const E = VIEW.ep;
+  if (E.k >= E.qs.length) return epreuveEnd(z, i);
+  const q = E.qs[E.k];
+  if (!E.started) { E.started = true; qStart = Date.now(); qExit = false; E.hintShown = 0; E.cur = { sel: null, atom: null, st: q.t === 'build' ? emptyState(q.mol) : null }; }
+  const dots = E.qs.map((_, j) => `<i class="${j < E.res.length ? (E.res[j] ? 'ok' : 'ko') : j === E.k ? 'cur' : ''}"></i>`).join('');
+  let body = '';
+  const C = E.cur;
+  if (q.t === 'qcm') {
+    if (!C.order) C.order = shuffle(q.o.map((_, j) => j));
+    body = `<div class="opts">${C.order.map(j => `<button class="opt ${C.sel === j ? 'sel' : ''} ${E.done ? (j === q.a ? 'good' : C.sel === j ? 'bad' : '') : ''}" data-opt="${j}" ${E.done ? 'disabled' : ''}>${q.o[j]}</button>`).join('')}</div>`;
+  } else if (q.t === 'num' || q.t === 'count') {
+    if (q.t === 'count') body += `<div class="stage">${drawLewis(q.mol, solution(q.mol), { highlight: q.at })}</div><p class="muted" style="text-align:center">L’atome étudié est surligné en jaune.</p>`;
+    body += `<div class="numpad">${q.ch.map(n => `<button data-num="${n}" class="${C.sel === n ? 'sel' : ''} ${E.done ? (n === q.a ? 'good' : C.sel === n ? 'bad' : '') : ''}" ${E.done ? 'disabled' : ''}>${n}</button>`).join('')}</div>`;
+  } else if (q.t === 'build') {
+    const errs = E.done ? checkBuild(q.mol, C.st) : [];
+    const mark = {}; errs.forEach(e => mark[e.id] = '#c92a2a');
+    body = `<div id="bz">${builderHTML(q.mol, C.st, 'build', { locked: E.done, mark })}</div>`;
+    if (E.done && errs.length) body += `<div class="fb ko">À corriger :<br>${errList(errs)}</div><p><b>Schéma correct :</b></p><div class="stage">${drawLewis(q.mol, solution(q.mol))}</div>`;
+  } else if (q.t === 'detect') {
+    const dst = { orders: q.orders.slice(), lps: Object.assign({}, q.lps), singles: {} };
+    const mark = {}; if (E.done) q.bad.forEach(b => mark[b] = '#2b8a3e');
+    body = `<p><b>Étape 1 :</b> clique sur l’atome fautif. ${C.atom ? `<span style="color:var(--c1)">Atome choisi : <b>${atomEl(q.mol, C.atom)}</b></span>` : ''}</p>
+      <div id="bz">${builderHTML(q.mol, dst, 'detect', { selected: C.atom, locked: E.done, mark })}</div>
+      <p style="margin-top:8px"><b>Étape 2 :</b> choisis l’explication.</p>`;
+    if (!C.order) C.order = shuffle(q.o.map((_, j) => j));
+    body += `<div class="opts">${C.order.map(j => `<button class="opt ${C.sel === j ? 'sel' : ''} ${E.done ? (j === q.a ? 'good' : C.sel === j ? 'bad' : '') : ''}" data-opt="${j}" ${E.done ? 'disabled' : ''}>${q.o[j]}</button>`).join('')}</div>`;
+  }
+  const ready = q.t === 'build' ? true : q.t === 'detect' ? (C.atom && C.sel !== null) : C.sel !== null;
+  const hintsHTML = q.h.slice(0, E.hintShown).map((h, j) => `<div class="hint">💡 Aide ${j + 1} : ${h}</div>`).join('');
+  z.innerHTML = `<div class="card">
+    <div class="qhead"><h2 style="margin:0">Question ${E.k + 1} / ${E.qs.length}</h2><div class="dots">${dots}</div>${E.training ? '<span class="muted">(entraînement)</span>' : ''}</div>
+    <div class="qtext">${q.q} ${spk(q.q)}</div>${body}
+    ${hintsHTML}
+    ${E.done ? feedback(q, E.res[E.res.length - 1]) : `<div class="hints">${[0, 1].map(j => `<button class="btn small ghost" data-hint="${j}" ${E.hintShown !== j ? 'disabled' : ''}>💡 Aide ${j + 1}</button>`).join('')}</div>`}
+    <div class="row" style="margin-top:10px">${E.done ? `<button class="btn orange" id="bNextQ">${E.k + 1 < E.qs.length ? 'Question suivante →' : 'Voir le résultat →'}</button>` : `<button class="btn green" id="bVal" ${ready ? '' : 'disabled'}>Valider ma réponse</button>`}</div></div>`;
+  z.querySelectorAll('[data-opt]').forEach(b => b.onclick = () => { C.sel = +b.dataset.opt; render(); });
+  z.querySelectorAll('[data-num]').forEach(b => b.onclick = () => { C.sel = +b.dataset.num; render(); });
+  z.querySelectorAll('[data-hint]').forEach(b => b.onclick = () => { E.hintShown++; if (!E.training) { S.salles[i].indices++; save(); } render(); });
+  if (q.t === 'build') bindBuilder($('#bz'), q.mol, C.st, 'build', () => render(), { locked: E.done });
+  if (q.t === 'detect') bindBuilder($('#bz'), q.mol, { orders: q.orders, lps: q.lps, singles: {} }, 'detect', id => { C.atom = id; render(); }, { locked: E.done });
+  const bv = $('#bVal'); if (bv) bv.onclick = () => {
+    let ok;
+    if (q.t === 'qcm') ok = C.sel === q.a;
+    else if (q.t === 'num' || q.t === 'count') ok = C.sel === q.a;
+    else if (q.t === 'build') ok = checkBuild(q.mol, C.st).length === 0;
+    else if (q.t === 'detect') ok = q.bad.includes(C.atom) && C.sel === q.a;
+    if (!E.training) recordAnswer(); else qStart = null;
+    E.res.push(ok); E.done = true; save(); render();
+  };
+  const bn = $('#bNextQ'); if (bn) bn.onclick = () => { E.k++; E.done = false; E.started = false; render(); };
+}
+function feedback(q, ok) {
+  let x = q.x || '';
+  if (q.t === 'build') x = ok ? 'Toutes les liaisons et tous les doublets sont corrects.' : 'Compare ton schéma avec le schéma correct ci-dessus.';
+  if (q.t === 'detect') x = `L’atome fautif était ${q.bad.length > 1 ? 'chacun des H' : 'l’atome ' + atomEl(q.mol, q.bad[0]) + ' (entouré en vert)'} : ${q.o[q.a]}.`;
+  return `<div class="fb ${ok ? 'ok' : 'ko'}">${ok ? '✔ Bonne réponse !' : '✖ Ce n’est pas ça.'} ${x}</div>`;
+}
+function epreuveEnd(z, i) {
+  const E = VIEW.ep, st = S.salles[i], n = E.res.filter(Boolean).length, pct = Math.round(100 * n / E.qs.length), win = n >= SEUIL;
+  if (!E.recorded) {
+    E.recorded = true;
+    if (!E.training) {
+      st.attempts.push({ ok: n, n: E.qs.length });
+      if (st.firstPct === null) st.firstPct = pct;
+      if (win) { st.passed = true; st.okPct = pct; st.okN = n; }
+      save(); renderCode();
+    }
+  }
+  z.innerHTML = `<div class="card result">
+    <div class="big">${n} / ${E.qs.length}</div>
+    ${win ? `<div class="door unlock">🔓</div><h2>${E.training ? 'Bien joué !' : 'La porte s’ouvre !'}</h2>
+      ${E.training ? '' : `<p>Tu gagnes la lettre <span style="display:inline-block;background:var(--orange);color:#3b2400;border-radius:8px;padding:2px 12px;font-family:var(--title);font-size:1.6rem;font-weight:700">${SALLES[i].lettre}</span> du code de sortie.</p>`}
+      <button class="btn orange" id="bOut">Retour au plan →</button>`
+      : `<div class="door">🔒</div><h2>La porte reste fermée…</h2><p>Il faut au moins ${SEUIL} bonnes réponses. Relis l’essentiel si besoin, puis retente avec de nouvelles questions.</p>
+      <div class="row" style="justify-content:center"><button class="btn ghost" id="bRet">📌 Relire l’essentiel</button><button class="btn orange" id="bAgain">Recommencer l’épreuve</button></div>`}
+  </div>`;
+  const bo = $('#bOut'); if (bo) bo.onclick = () => go({ name: 'map' });
+  const br = $('#bRet'); if (br) br.onclick = () => { VIEW.step = 'ret'; VIEW.ep = null; render(); };
+  const ba = $('#bAgain'); if (ba) ba.onclick = () => { VIEW.ep = { qs: BANK[SALLES[i].id](), k: 0, res: [], done: false, training: E.training }; render(); };
+}
+
+/* ---------- PORTE FINALE ---------- */
+function viewFinal() {
+  const F = S.final;
+  if (!VIEW.fin) VIEW.fin = { st: emptyState('GLY'), msg: '', hint: 0, checked: false };
+  const V = VIEW.fin;
+  if (!F.code) {
+    app.innerHTML = `<div class="card result"><div class="door">🚪</div><h1>La porte de sortie</h1>
+      <p>Un cadenas à 5 lettres bloque la porte. Entre le code formé par les lettres que tu as gagnées, dans l’ordre des salles.</p>
+      <div class="row" style="justify-content:center"><input type="text" id="fCode" maxlength="5" style="max-width:220px;text-align:center;font-size:1.6rem;letter-spacing:.3em;text-transform:uppercase" aria-label="Code de sortie"><button class="btn orange" id="bCode">Ouvrir</button></div>
+      <p id="codeMsg" style="font-weight:700"></p><button class="btn small ghost" id="bBack">← Plan</button></div>`;
+    $('#bBack').onclick = () => go({ name: 'map' });
+    $('#bCode').onclick = () => {
+      if ($('#fCode').value.trim().toUpperCase() === 'OCTET') { F.code = true; save(); render(); }
+      else $('#codeMsg').innerHTML = '<span style="color:var(--ko)">Ce n’est pas le bon code. Regarde les lettres en haut de l’écran.</span>';
+    };
+    return;
+  }
+  if (F.done) { go({ name: 'bilan' }); return; }
+  if (!V.started) { V.started = true; qStart = Date.now(); qExit = false; }
+  const H = ['Liaisons à former : H : 1, C : 4, N : 3, O : 2. Commence par une liaison simple entre chaque paire de voisins.', 'Le second carbone (à droite) n’a que 3 voisins : il forme une liaison double avec l’oxygène du haut (celui qui ne porte pas de H). Puis : 1 doublet non liant sur N et 2 sur chaque O.'];
+  app.innerHTML = `<div class="card"><div class="row"><div class="grow"><h1>🧬 Dernière épreuve : la glycine</h1></div><button class="btn small ghost" id="bBack">← Plan</button></div>
+    <div class="story">Le cadenas s’ouvre… mais la porte est encore retenue par un mécanisme : le professeur Lewis a laissé le squelette de la <b>glycine</b>, l’acide aminé le plus simple (formule C₂H₅NO₂, enchaînement H₂N–CH₂–COOH). Complète son schéma de Lewis pour sortir !${spk('Complète le schéma de Lewis de la glycine, formule C2H5NO2, enchaînement H2N CH2 COOH.')}</div>
+    <div id="bz">${builderHTML('GLY', V.st, 'build', { scale: 0.95 })}</div>
+    ${H.slice(0, V.hint).map((h, j) => `<div class="hint">💡 Aide ${j + 1} : ${h}</div>`).join('')}
+    <div class="hints">${[0, 1].map(j => `<button class="btn small ghost" data-hint="${j}" ${V.hint !== j ? 'disabled' : ''}>💡 Aide ${j + 1}</button>`).join('')}</div>
+    <div class="row"><button class="btn green" id="bCheck">Vérifier et ouvrir la porte</button><button class="btn small ghost" id="bClear">↺ Effacer</button></div>
+    <div id="msg">${V.msg}</div></div>`;
+  $('#bBack').onclick = () => go({ name: 'map' });
+  bindBuilder($('#bz'), 'GLY', V.st, 'build', () => { V.msg = ''; render(); });
+  app.querySelectorAll('[data-hint]').forEach(b => b.onclick = () => { V.hint++; F.indices++; save(); render(); });
+  $('#bClear').onclick = () => { V.st = emptyState('GLY'); V.msg = ''; render(); };
+  $('#bCheck').onclick = () => {
+    const er = checkBuild('GLY', V.st); F.tries++;
+    if (F.firstOk === null) { F.firstOk = er.length === 0; recordAnswer(); }
+    if (er.length) { V.msg = `<div class="fb ko">La porte résiste… À corriger :<br>${errList(er)}</div>`; save(); render(); }
+    else { F.done = true; leaveSalle(); salleEnter = null; save(); app.innerHTML = `<div class="card result"><div class="door unlock">🎉</div><h1>Tu es sorti(e) du laboratoire !</h1><p>Le professeur Lewis te remercie : tu maîtrises le duet, l’octet et les schémas de Lewis.</p><button class="btn orange" id="bB">Voir mon bilan →</button></div>`; $('#bB').onclick = () => go({ name: 'bilan' }); }
+  };
+}
+
+/* ---------- BILAN ET ENVOI ---------- */
+function computeResults() {
+  let score = 0, tot = 0, okAll = 0, first = 0, indices = 0;
+  const niveaux = SALLES.map((s, i) => {
+    const st = S.salles[i];
+    st.attempts.forEach(a => { tot += a.n; okAll += a.ok; });
+    if (st.passed) score += st.okN;
+    first += st.firstPct !== null ? st.firstPct * NQ / 100 : 0;
+    indices += st.indices;
+    return { nom: `Salle ${i + 1} ${s.titre}`, pct: st.passed ? st.okPct : (st.attempts.length ? Math.round(100 * Math.max(...st.attempts.map(a => a.ok)) / NQ) : 0),
+      temps: fmtT(st.time), premierEssai: st.firstPct === null ? '—' : st.firstPct + ' %', tentatives: st.attempts.length };
+  });
+  const F = S.final;
+  if (F.tries) { tot += F.tries; okAll += F.done ? 1 : 0; }
+  if (F.done) score += 1;
+  if (F.firstOk) first += 1;
+  indices += F.indices;
+  niveaux.push({ nom: 'Porte finale glycine', pct: F.done ? 100 : 0, temps: fmtT(F.time), premierEssai: F.firstOk === null ? '—' : (F.firstOk ? '100 %' : '0 %'), tentatives: F.tries });
+  const scoreMax = SALLES.length * NQ + 1;
+  const times = S.act.times.slice().sort((a, b) => a - b);
+  const med = times.length ? times[Math.floor(times.length / 2)] : 0;
+  return { score, scoreMax, pourcentage: tot ? Math.round(100 * okAll / tot) : 0, premierEssai: Math.round(100 * first / scoreMax),
+    temps: fmtT(S.elapsed), indices, erreurs: tot - okAll, niveaux,
+    activite: { sorties: S.act.sorties, tempsHors: fmtT(S.act.horsMs), copies: S.act.copies, tempsMedian: String(med), rapides: S.act.rapides, apresSortie: S.act.apresSortie, reponses: S.act.reponses } };
+}
+function viewBilan() {
+  const R = computeResults();
+  app.innerHTML = `<div class="hero"><h1>📊 Mon bilan</h1><p>${esc(S.eleve.prenom)} ${esc(S.eleve.initiale)}. · ${esc(S.eleve.classe)}</p></div>
+  <div class="card result"><div class="big">${R.score} / ${R.scoreMax}</div>
+    <p>Réussite globale : <b>${R.pourcentage} %</b> · Réussite au 1<sup>er</sup> essai : <b>${R.premierEssai} %</b> · Temps total : <b>${R.temps}</b> · Aides utilisées : <b>${R.indices}</b></p></div>
+  <div class="card"><h2>Détail par salle</h2><div style="overflow-x:auto"><table class="t"><tr><th>Salle</th><th>Tentatives</th><th>Résultat</th><th>1<sup>er</sup> essai</th><th>Temps</th></tr>
+    ${R.niveaux.map(n => `<tr><td style="text-align:left">${esc(n.nom)}</td><td>${n.tentatives}</td><td>${n.pct} %</td><td>${n.premierEssai}</td><td>${n.temps}</td></tr>`).join('')}</table></div></div>
+  <div class="card" style="text-align:center">
+    <div class="row" style="justify-content:center"><button class="btn orange" id="bSend" ${S.sent ? 'disabled' : ''}>📤 ${S.sent ? 'Résultats envoyés' : 'Envoyer mes résultats au professeur'}</button><button class="btn ghost" id="bRestart">↺ Recommencer</button></div>
+    <div class="sendstate" id="sendState">${S.sent ? '✔ Tes résultats ont bien été envoyés.' : ''}</div>
+    <p style="margin-top:10px"><button class="btn small ghost" id="bMapB">← Revenir au plan pour t’entraîner</button></p></div>`;
+  $('#bMapB').onclick = () => go({ name: 'map' });
+  $('#bRestart').onclick = () => { if (confirm('Recommencer une nouvelle partie ? Ta partie actuelle sera effacée de cet appareil.')) { try { localStorage.removeItem(SAVE_KEY); } catch (e) {} S = null; clearInterval(tick); VIEW = { name: 'home' }; render(); } };
+  $('#bSend').onclick = async () => {
+    const b = $('#bSend'), ss = $('#sendState'); b.disabled = true; ss.textContent = 'Envoi en cours…'; ss.style.color = 'var(--navy)';
+    const payload = Object.assign({ jeu: JEU, prenom: S.eleve.prenom, initiale: S.eleve.initiale, classe: S.eleve.classe, test: PROF }, R);
+    payload.niveaux = R.niveaux.map(n => ({ nom: n.nom, pct: n.pct, temps: n.temps, premierEssai: n.premierEssai }));
+    try {
+      const r = await fetch(WORKER, { method: 'POST', headers: { 'Content-Type': 'text/plain;charset=utf-8' }, body: JSON.stringify(payload) });
+      if (!r.ok) throw new Error(await r.text());
+      S.sent = true; save(); ss.textContent = '✔ Tes résultats ont bien été envoyés.'; ss.style.color = 'var(--ok)'; b.textContent = '📤 Résultats envoyés';
+    } catch (e) {
+      console.error('Envoi impossible :', e); b.disabled = false; ss.style.color = 'var(--ko)';
+      ss.textContent = '✖ L’envoi a échoué (connexion ?). Réessaie dans un instant ; si cela continue, préviens ton professeur.';
+    }
+  };
+}
+
+/* ---------- AIDE-MÉMOIRE ---------- */
+function memoHTML() {
+  const pt = [[['H', 1, 's'], null, null, null, null, null, null, ['He', 2, 'g']],
+    [['Li', 3, 's'], ['Be', 4, 's'], ['B', 5, 'p'], ['C', 6, 'p'], ['N', 7, 'p'], ['O', 8, 'p'], ['F', 9, 'p'], ['Ne', 10, 'g']],
+    [['Na', 11, 's'], ['Mg', 12, 's'], ['Al', 13, 'p'], ['Si', 14, 'p'], ['P', 15, 'p'], ['S', 16, 'p'], ['Cl', 17, 'p'], ['Ar', 18, 'g']]];
+  return `<button class="btn small ghost close" data-close>✕ Fermer</button><h2>📒 Aide-mémoire</h2>
+  <div class="def"><b>Règle du duet :</b> H s’entoure de 2 électrons (comme l’hélium). <b>Règle de l’octet :</b> C, N, O, Cl… s’entourent de 8 électrons (comme le néon ou l’argon).</div>
+  <div class="def"><b>Électrons autour d’un atome</b> = 2 × (doublets liants) + 2 × (doublets non liants). Liaison double = 2 doublets liants ; triple = 3.</div>
+  <table class="t"><tr><th>Atome</th><th>Électrons de valence</th><th>Électrons manquants = liaisons</th><th>Doublets non liants</th></tr>
+  ${['H', 'C', 'N', 'O', 'Cl'].map(e => `<tr><td><b>${e}</b></td><td>${VAL[e]}</td><td>${EXPB(e)}</td><td>${EXPLP(e)}</td></tr>`).join('')}</table>
+  <p><b>Ions :</b> perdre des électrons → ion positif (Na⁺, Mg²⁺, Al³⁺) ; gagner des électrons → ion négatif (F⁻, Cl⁻, O²⁻). Un atome échange le moins d’électrons possible.</p>
+  <table class="pt"><tr><th></th>${['1', '2', '13', '14', '15', '16', '17', '18'].map(c => `<th>${c}</th>`).join('')}</tr>
+  ${pt.map((r, i) => `<tr><th>${i + 1}</th>${r.map(c => c ? `<td class="${c[2]}"><small>${c[1]}</small>${c[0]}</td>` : '<td class="e"></td>').join('')}</tr>`).join('')}</table>
+  <p class="muted" style="text-align:center">Électrons de valence = chiffre des unités du numéro de colonne (sauf He : 2). Gaz nobles en vert.</p>`;
+}
+
+/* ---------- CONFORT DE LECTURE ---------- */
+function applyConf() {
+  document.body.classList.toggle('dys', CONF.dys); document.body.classList.toggle('big', CONF.big);
+  document.body.classList.toggle('contrast', CONF.contrast); document.body.classList.toggle('noanim', !CONF.anim);
+  document.body.classList.toggle('tts', CONF.tts); $('#chrono').classList.toggle('hidden', !CONF.chrono);
+  store(CONF_KEY, CONF);
+}
+function confHTML() {
+  const T = [['dys', 'Police adaptée (dys)', 'Police Atkinson Hyperlegible, lettres et mots plus espacés.'], ['big', 'Texte plus grand', ''], ['contrast', 'Contraste renforcé', ''],
+    ['anim', 'Animations', ''], ['chrono', 'Afficher le chronomètre', 'Le temps est toujours compté, mais tu peux le masquer pour ne pas te sentir pressé(e).'], ['tts', 'Lecture à voix haute', 'Ajoute des boutons 🔊 pour écouter les textes et les questions.']];
+  return `<button class="btn small ghost close" data-close>✕ Fermer</button><h2>👓 Confort de lecture</h2>
+  ${T.map(([k, l, d]) => `<div class="toggle"><div><b>${l}</b>${d ? `<br><small class="muted">${d}</small>` : ''}</div><button class="switch ${CONF[k] ? 'on' : ''}" data-conf="${k}" role="switch" aria-checked="${CONF[k]}" aria-label="${l}"></button></div>`).join('')}`;
+}
+$('#bMemo').onclick = () => { $('#memoPanel').innerHTML = memoHTML(); $('#ovMemo').classList.add('open'); };
+$('#bConf').onclick = () => { $('#confPanel').innerHTML = confHTML(); $('#ovConf').classList.add('open'); };
+$('#bMap').onclick = () => { if (S && S.eleve) go({ name: 'map' }); };
+document.querySelectorAll('.overlay').forEach(ov => ov.addEventListener('click', e => {
+  if (e.target === ov || e.target.closest('[data-close]')) ov.classList.remove('open');
+  const c = e.target.closest('[data-conf]'); if (c) { CONF[c.dataset.conf] = !CONF[c.dataset.conf]; applyConf(); $('#confPanel').innerHTML = confHTML(); render(); }
+}));
+document.addEventListener('keydown', e => { if (e.key === 'Escape') document.querySelectorAll('.overlay.open').forEach(o => o.classList.remove('open')); });
+
+/* ---------- démarrage ---------- */
+if (PROF) $('#profbar').style.display = '';
+applyConf();
+render();
+</script>
+</body>
+</html>
