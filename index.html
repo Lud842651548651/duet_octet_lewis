@@ -196,6 +196,26 @@ table.t th{ background:#eef0f7; color:var(--navy); }
 .pt td small{ position:absolute; top:1px; left:4px; font-size:.6rem; color:#666; font-weight:600; }
 .pt .s{ background:#e8f0ff; } .pt .p{ background:#fdeaf1; } .pt .g{ background:#eef6cf; } .pt .e{ background:none; }
 .pt th{ font-size:.7rem; color:#666; }
+.panel.wide{ max-width:980px; }
+.ptc-wrap{ overflow-x:auto; }
+.ptc{ border-collapse:separate; border-spacing:4px; margin:6px auto; }
+.ptc th{ font-size:.75rem; color:#666; font-weight:700; }
+.ptc td{ width:104px; min-width:96px; height:92px; border-radius:10px; vertical-align:top; padding:4px 6px; cursor:pointer; border:2px solid transparent; text-align:left; }
+.ptc td.e{ background:none; cursor:default; }
+.ptc td.s{ background:#e8f0ff; } .ptc td.p{ background:#fdeaf1; } .ptc td.g{ background:#eef6cf; }
+.ptc td:hover:not(.e), .ptc td.sel{ border-color:var(--navy); }
+.ptc .z{ font-size:.7rem; color:#555; }
+.ptc .sy{ font-family:var(--title); font-weight:700; font-size:1.35rem; color:var(--navy); line-height:1.1; }
+.ptc .nm{ font-size:.68rem; color:#444; }
+.ptc .cf{ font-size:.72rem; margin-top:2px; line-height:1.35; color:#555; }
+.ptc .cf .v, .ptdet .v{ color:var(--c3); font-weight:800; }
+.swipe{ display:none; text-align:center; font-size:.85rem; color:var(--muted); }
+@media (max-width:640px){ .swipe{ display:block; } }
+.formule-g{ display:inline-block; background:var(--navy); color:white; border-radius:10px; padding:6px 14px; font-weight:800; }
+table.why td{ vertical-align:middle; }
+table.why svg{ max-width:80px; }
+.ptdet{ border:2px solid var(--navy); border-radius:12px; padding:10px 14px; margin-top:8px; background:#f6f7fb; font-size:1.05rem; }
+.ptdet .big{ font-family:var(--title); font-size:1.6rem; color:var(--navy); }
 .profbar{ background:#c2410c; color:white; text-align:center; padding:6px; font-weight:800; }
 .sendstate{ margin-top:8px; font-weight:700; }
 .toast{ position:fixed; bottom:20px; left:50%; transform:translateX(-50%); background:var(--navy); color:white; padding:10px 18px; border-radius:12px; z-index:60; box-shadow:0 10px 30px rgba(0,0,0,.4); display:none; }
@@ -215,11 +235,13 @@ table.t th{ background:#eef0f7; color:var(--navy); }
   <span class="chrono" id="chrono" aria-label="Temps écoulé">0:00</span>
   <button class="tbtn" id="bMap" title="Plan du laboratoire" aria-label="Plan du laboratoire">🗺️ <span class="lbl">Plan</span></button>
   <button class="tbtn" id="bMemo" title="Aide-mémoire" aria-label="Aide-mémoire">📒 <span class="lbl">Aide-mémoire</span></button>
+  <button class="tbtn" id="bPT" title="Classification périodique" aria-label="Classification périodique">🧮 <span class="lbl">Classification</span></button>
   <button class="tbtn" id="bConf" title="Confort de lecture" aria-label="Confort de lecture">👓 <span class="lbl">Confort</span></button>
 </header>
 <main id="app"></main>
 
 <div class="overlay" id="ovMemo" role="dialog" aria-modal="true" aria-label="Aide-mémoire"><div class="panel" id="memoPanel"></div></div>
+<div class="overlay" id="ovPT" role="dialog" aria-modal="true" aria-label="Classification périodique"><div class="panel wide" id="ptPanel"></div></div>
 <div class="overlay" id="ovConf" role="dialog" aria-modal="true" aria-label="Confort de lecture"><div class="panel" id="confPanel"></div></div>
 <div class="toast" id="toast" role="status"></div>
 
@@ -435,7 +457,7 @@ const SALLES = [
       <p>En formant des liaisons, les atomes obtiennent la configuration électronique du <b>gaz noble le plus proche</b> : la molécule est <b>plus stable</b> que les atomes isolés.</p>
       <ul><li><b>Règle du duet :</b> l’hydrogène s’entoure de <b>2 électrons</b> (comme l’hélium).</li>
       <li><b>Règle de l’octet :</b> C, N, O, Cl… s’entourent de <b>8 électrons</b> (comme le néon ou l’argon).</li></ul>
-      <p>Un atome forme autant de liaisons qu’il lui manque d’électrons : <b>H : 1, O : 2, N : 3, C : 4, Cl : 1</b>.</p>` },
+      <p><b>Pourquoi 1, 2, 3 ou 4 liaisons ?</b> Chaque liaison apporte à l’atome un électron de plus (celui de son voisin). Un atome forme donc <b>autant de liaisons qu’il lui manque d’électrons</b> pour en avoir 2 (H) ou 8 : nombre de liaisons = 8 − électrons de valence.</p><p><b>H</b> (1 électron de valence) : 2 − 1 = <b>1 liaison</b> · <b>O</b> (6) : 8 − 6 = <b>2</b> · <b>N</b> (5) : 8 − 5 = <b>3</b> · <b>C</b> (4) : 8 − 4 = <b>4</b> · <b>Cl</b> (7) : 8 − 7 = <b>1</b>.</p>` },
   { id: 'echange', titre: 'Donner, prendre ou partager ?', ic: '⚖️', lettre: 'C',
     story: 'Deuxième pièce : la salle des échanges. Pour ressembler à un gaz noble, un atome a trois solutions : <b>perdre</b> des électrons, en <b>gagner</b>, ou les <b>partager</b>. Laquelle choisir ?',
     obs: [
@@ -458,7 +480,7 @@ const SALLES = [
     ],
     retiens: `<p><b>Méthode pour construire un schéma de Lewis :</b></p>
       <ol><li>Je trace une <b>liaison simple</b> entre chaque paire d’atomes voisins.</li>
-      <li>Je vérifie le nombre de liaisons de chaque atome (<b>H : 1, O : 2, N : 3, C : 4, Cl : 1</b>). S’il en manque à deux atomes voisins, je transforme leur liaison en liaison <b>double</b> ou <b>triple</b>.</li>
+      <li>Je vérifie le nombre de liaisons de chaque atome. Un atome forme autant de liaisons qu’il lui manque d’électrons pour avoir 2 (H) ou 8 électrons : <b>H : 2 − 1 = 1, O : 8 − 6 = 2, N : 8 − 5 = 3, C : 8 − 4 = 4, Cl : 8 − 7 = 1</b>. S’il en manque à deux atomes voisins, je transforme leur liaison en liaison <b>double</b> ou <b>triple</b>.</li>
       <li>J’ajoute les <b>doublets non liants</b> : O en porte 2, N en porte 1, Cl en porte 3, C et H n’en portent pas.</li>
       <li>Je vérifie : électrons autour d’un atome = 2 × (doublets liants) + 2 × (doublets non liants) = <b>2 pour H</b>, <b>8</b> pour les autres.</li></ol>
       <p>Une liaison double compte pour <b>2 doublets liants</b> (4 électrons), une liaison triple pour <b>3</b> (6 électrons).</p>` },
@@ -518,7 +540,7 @@ const BANK = {
     const easy = pick(['H2O', 'NH3', 'CH4', 'HCl', 'Cl2'], 2), mid = pick(['O2', 'CO2', 'CH2O'], 2), hard = pick(['N2', 'HCN', 'C2H4'], 2);
     return [...easy, ...mid, ...hard].map(k => ({ t: 'build', mol: k,
       q: `Construis le schéma de Lewis de la molécule de ${M[k].nom} ${M[k].f}.`,
-      h: ['Nombre de liaisons à former : H : 1, O : 2, N : 3, C : 4, Cl : 1.', 'S’il manque des liaisons à deux voisins, transforme leur liaison en double ou triple. Complète ensuite avec des doublets non liants (O : 2, N : 1, Cl : 3).'] }));
+      h: ['Un atome forme autant de liaisons qu’il lui manque d’électrons : H : 2 − 1 = 1, O : 8 − 6 = 2, N : 8 − 5 = 3, C : 8 − 4 = 4, Cl : 8 − 7 = 1.', 'S’il manque des liaisons à deux voisins, transforme leur liaison en double ou triple. Complète ensuite avec des doublets non liants (O : 2, N : 1, Cl : 3).'] }));
   },
   detect: () => pick(DETECT, NQ).map(d => ({ t: 'detect', ...d, h: ['Pour chaque atome : électrons autour = 2 × liants + 2 × non liants.', 'Il faut 2 électrons pour H et 8 pour les autres atomes. Clique sur l’atome qui ne respecte pas sa règle.'] })),
   compteur: () => {
@@ -595,10 +617,10 @@ function viewHome() {
   </div>
   <div class="card"><h2>Comment ça marche ?</h2>
     <ul>
-      <li>Chaque salle a <b>trois étapes</b> : 🔬 <b>Découvre</b> (tu manipules et tu notes tes réponses sur ta feuille), 📌 <b>Retiens</b> (l’essentiel du cours) et 🗝️ <b>Épreuve</b> (6 questions).</li>
+      <li>Chaque salle a <b>trois étapes</b> : 🔬 <b>Découvre</b> (tu manipules et tu réfléchis aux questions dans ta tête), 📌 <b>Retiens</b> (l’essentiel du cours) et 🗝️ <b>Épreuve</b> (6 questions).</li>
       <li>Il faut <b>au moins 5 bonnes réponses sur 6</b> pour ouvrir la porte et gagner une lettre du code. Sinon, tu recommences l’épreuve avec de nouvelles questions.</li>
       <li>Une réponse validée ne peut plus être modifiée. Tu as <b>deux aides</b> par question, sans perte de points.</li>
-      <li>Le bouton 📒 <b>Aide-mémoire</b> rappelle les règles ; le bouton 👓 <b>Confort</b> permet de changer la police, la taille, le contraste ou d’écouter les textes.</li>
+      <li>Le bouton 📒 <b>Aide-mémoire</b> rappelle les règles ; le bouton 🧮 <b>Classification</b> montre le tableau périodique avec les configurations électroniques ; le bouton 👓 <b>Confort</b> permet de changer la police, la taille, le contraste ou d’écouter les textes.</li>
       <li>Ta progression est enregistrée sur cet appareil. À la fin, tu envoies ton bilan à ton professeur. Il voit aussi le temps passé, les sorties de la page et les copies de texte : reste sur la page et réponds seul(e).</li>
     </ul></div>`;
   if (canResume) {
@@ -662,7 +684,7 @@ function viewSalle() {
   else viewEpreuve(z, i);
 }
 function obsHTML(i) {
-  return `<div class="card"><h2>📝 Sur ta feuille</h2><p class="muted">Réponds d’abord sur ta feuille, puis clique pour vérifier.</p>
+  return `<div class="card"><h2>🧠 Dans ta tête</h2><p class="muted">Réfléchis d’abord à ta réponse dans ta tête, puis clique pour vérifier.</p>
     ${SALLES[i].obs.map((o, k) => `<div class="obs" id="obs${k}"><div class="q">${k + 1}. ${o.q} ${spk(o.q)}</div>
     <button class="btn small ghost" data-obs="${k}" style="margin-top:6px">Voir la réponse</button><div class="rep">${o.r}</div></div>`).join('')}
     <div style="margin-top:10px"><button class="btn orange" id="bDecDone">J’ai fini de découvrir → Retiens</button></div></div>`;
@@ -725,6 +747,33 @@ function bindBuilder(container, key, st, mode, onChange, extra = {}) {
   };
 }
 
+
+/* ---------- POURQUOI 1, 2, 3 OU 4 LIAISONS ? ---------- */
+['H','C','N','O','Cl'].forEach(el => { M['at_' + el] = { nom: NOMS[el], f: el, atoms: [['x', el, 0, 0]], edges: [] }; });
+function atomAlone(el) {   // atome isolé : doublets (tirets roses) + électrons célibataires (points orange)
+  const s0 = el === 'H' ? 1 : 8 - VAL[el];
+  return drawLewis('at_' + el, { orders: [], lps: { x: (VAL[el] - s0) / 2 }, singles: { x: s0 } }, { scale: 0.85 });
+}
+function whyHTML(full) {
+  const ex = { H: 'H₂, HCl, H₂O', C: 'CH₄, CO₂', N: 'NH₃, N₂', O: 'H₂O, CO₂', Cl: 'HCl, Cl₂' };
+  const rows = ['H', 'O', 'N', 'C', 'Cl'].map(el => {
+    const t = TARGET(el), b = EXPB(el), lp = EXPLP(el);
+    return `<tr><td>${atomAlone(el)}</td><td style="text-align:left"><b>${NOMS[el]} ${el}</b> : ${VAL[el]} électron${VAL[el] > 1 ? 's' : ''} de valence.
+      Pour avoir ${t} électrons (${t === 2 ? 'duet, comme l’hélium' : 'octet, comme le néon ou l’argon'}), il lui en manque <b>${t} − ${VAL[el]} = ${b}</b>
+      → il forme <b>${b} liaison${b > 1 ? 's' : ''}</b>${lp ? ` et garde <b>${lp} doublet${lp > 1 ? 's' : ''} non liant${lp > 1 ? 's' : ''}</b>` : ''}.
+      ${full ? `<br><small class="muted">Exemples : ${ex[el]}</small>` : ''}</td></tr>`;
+  }).join('');
+  return `<div class="card"><h2>❓ Pourquoi 1, 2, 3 ou 4 liaisons ? ${spk('Chaque liaison covalente apporte à un atome un électron de plus : celui que son voisin met en commun. Un atome forme donc autant de liaisons qu’il lui manque d’électrons pour atteindre 2 électrons pour l’hydrogène, ou 8 électrons pour les autres atomes.')}</h2>
+    <div class="def"><b>L’idée clé :</b> chaque liaison covalente apporte à un atome <b>un électron de plus</b> : celui que son voisin met en commun. Un atome forme donc <b>autant de liaisons qu’il lui manque d’électrons</b> pour atteindre <b>2</b> (H) ou <b>8</b> (les autres).</div>
+    <div class="row" style="gap:16px; justify-content:center; margin:6px 0">
+      <span class="formule-g">nombre de liaisons = 8 − électrons de valence</span>
+      <span class="formule-g">pour H : 2 − 1 = 1 liaison</span></div>
+    <p>Sur les dessins, les <span style="color:#b26b00;font-weight:800">points orange</span> sont les électrons <b>célibataires</b> : chacun peut former une liaison. Les <span style="color:#d6336c;font-weight:800">tirets roses</span> sont des doublets déjà formés : ils restent des <b>doublets non liants</b>.</p>
+    <div style="overflow-x:auto"><table class="t why">${rows}</table></div>
+    ${full ? '<p><b>Et les liaisons doubles ou triples ?</b> Si un atome n’a pas assez de voisins pour former toutes ses liaisons, il en forme plusieurs avec le même voisin : O=O (chaque O doit faire 2 liaisons), N≡N (chaque N doit en faire 3), O=C=O (C doit en faire 4).</p>' : ''}
+  </div>`;
+}
+
 /* ---------- DÉCOUVRE : une fonction par salle ---------- */
 const COLOC_MISSIONS = ['H2', 'HCl', 'H2O', 'NH3', 'O2'];
 function colocState(key) {
@@ -783,7 +832,7 @@ const DECOUVRE = {
     const LIST = ['H2O', 'NH3', 'CH4', 'CO2', 'N2', 'HCN'];
     if (!VIEW.lab) VIEW.lab = { k: 'H2O', st: emptyState('H2O'), msg: '' };
     const L = VIEW.lab;
-    z.innerHTML = `<div class="card"><h2>🔬 L’établi : construis librement</h2>
+    z.innerHTML = `${whyHTML(true)}<div class="card"><h2>🔬 L’établi : construis librement</h2>
       <div class="atompick">${LIST.map(k => `<button data-mk="${k}" class="${k === L.k ? 'on' : ''}">${M[k].f}</button>`).join('')}</div>
       <p style="margin-top:8px"><b>Molécule de ${M[L.k].nom} ${M[L.k].f}.</b> La couleur de chaque symbole t’aide : <span style="color:${COLS.under};font-weight:800">orange</span> = pas assez d’électrons, <span style="color:${COLS.ok};font-weight:800">vert</span> = règle respectée, <span style="color:${COLS.over};font-weight:800">rouge</span> = trop d’électrons.</p>
       <div id="bz">${builderHTML(L.k, L.st, 'build')}</div>
@@ -947,7 +996,7 @@ function viewFinal() {
   }
   if (F.done) { go({ name: 'bilan' }); return; }
   if (!V.started) { V.started = true; qStart = Date.now(); qExit = false; }
-  const H = ['Liaisons à former : H : 1, C : 4, N : 3, O : 2. Commence par une liaison simple entre chaque paire de voisins.', 'Le second carbone (à droite) n’a que 3 voisins : il forme une liaison double avec l’oxygène du haut (celui qui ne porte pas de H). Puis : 1 doublet non liant sur N et 2 sur chaque O.'];
+  const H = ['Liaisons à former (électrons qui manquent pour 2 ou 8) : H : 1, C : 4, N : 3, O : 2. Commence par une liaison simple entre chaque paire de voisins.', 'Le second carbone (à droite) n’a que 3 voisins : il forme une liaison double avec l’oxygène du haut (celui qui ne porte pas de H). Puis : 1 doublet non liant sur N et 2 sur chaque O.'];
   app.innerHTML = `<div class="card"><div class="row"><div class="grow"><h1>🧬 Dernière épreuve : la glycine</h1></div><button class="btn small ghost" id="bBack">← Plan</button></div>
     <div class="story">Le cadenas s’ouvre… mais la porte est encore retenue par un mécanisme : le professeur Lewis a laissé le squelette de la <b>glycine</b>, l’acide aminé le plus simple (formule C₂H₅NO₂, enchaînement H₂N–CH₂–COOH). Complète son schéma de Lewis pour sortir !${spk('Complète le schéma de Lewis de la glycine, formule C2H5NO2, enchaînement H2N CH2 COOH.')}</div>
     <div id="bz">${builderHTML('GLY', V.st, 'build', { scale: 0.95 })}</div>
@@ -1028,6 +1077,7 @@ function memoHTML() {
   return `<button class="btn small ghost close" data-close>✕ Fermer</button><h2>📒 Aide-mémoire</h2>
   <div class="def"><b>Règle du duet :</b> H s’entoure de 2 électrons (comme l’hélium). <b>Règle de l’octet :</b> C, N, O, Cl… s’entourent de 8 électrons (comme le néon ou l’argon).</div>
   <div class="def"><b>Électrons autour d’un atome</b> = 2 × (doublets liants) + 2 × (doublets non liants). Liaison double = 2 doublets liants ; triple = 3.</div>
+  <div class="def"><b>Pourquoi 1, 2, 3 ou 4 liaisons ?</b> Chaque liaison apporte à l’atome un électron de son voisin. Un atome forme autant de liaisons qu’il lui manque d’électrons : <b>liaisons = 8 − électrons de valence</b> (2 − 1 = 1 pour H). Ses autres électrons de valence forment des doublets non liants.</div>
   <table class="t"><tr><th>Atome</th><th>Électrons de valence</th><th>Électrons manquants = liaisons</th><th>Doublets non liants</th></tr>
   ${['H', 'C', 'N', 'O', 'Cl'].map(e => `<tr><td><b>${e}</b></td><td>${VAL[e]}</td><td>${EXPB(e)}</td><td>${EXPLP(e)}</td></tr>`).join('')}</table>
   <p><b>Ions :</b> perdre des électrons → ion positif (Na⁺, Mg²⁺, Al³⁺) ; gagner des électrons → ion négatif (F⁻, Cl⁻, O²⁻). Un atome échange le moins d’électrons possible.</p>
@@ -1057,6 +1107,62 @@ document.querySelectorAll('.overlay').forEach(ov => ov.addEventListener('click',
   const c = e.target.closest('[data-conf]'); if (c) { CONF[c.dataset.conf] = !CONF[c.dataset.conf]; applyConf(); $('#confPanel').innerHTML = confHTML(); render(); }
 }));
 document.addEventListener('keydown', e => { if (e.key === 'Escape') document.querySelectorAll('.overlay.open').forEach(o => o.classList.remove('open')); });
+
+
+/* ---------- CLASSIFICATION PÉRIODIQUE AVEC CONFIGURATIONS ---------- */
+const PTD = [
+  [['H',1,'hydrogène','s'],null,null,null,null,null,null,['He',2,'hélium','g']],
+  [['Li',3,'lithium','s'],['Be',4,'béryllium','s'],['B',5,'bore','p'],['C',6,'carbone','p'],['N',7,'azote','p'],['O',8,'oxygène','p'],['F',9,'fluor','p'],['Ne',10,'néon','g']],
+  [['Na',11,'sodium','s'],['Mg',12,'magnésium','s'],['Al',13,'aluminium','p'],['Si',14,'silicium','p'],['P',15,'phosphore','p'],['S',16,'soufre','p'],['Cl',17,'chlore','p'],['Ar',18,'argon','g']]
+];
+const COLS_PT = ['1','2','13','14','15','16','17','18'];
+function configV(n) {   // configuration avec la couche externe en couleur
+  const sub = [['1s',2],['2s',2],['2p',6],['3s',2],['3p',6]]; const parts = []; let left = n;
+  for (const [s, c] of sub) { if (left <= 0) break; const k = Math.min(c, left); parts.push([s, k]); left -= k; }
+  const ext = Math.max(...parts.map(p => +p[0][0]));
+  const val = parts.filter(p => +p[0][0] === ext).reduce((a, p) => a + p[1], 0);
+  return { html: parts.map(([s, k]) => `<span class="${+s[0] === ext ? 'v' : ''}">${s}<sup>${k}</sup></span>`).join(' '), ext, val };
+}
+let PTSEL = null;
+function ptHTML() {
+  let det = '<p class="muted" style="text-align:center">Clique sur une case pour afficher le détail en grand.</p>';
+  if (PTSEL) {
+    const [r, c] = PTSEL, [sy, z, nm] = PTD[r][c], cf = configV(z);
+    det = `<div class="ptdet"><span class="big">${sy}</span> — <b>${nm}</b> (Z = ${z}) · ligne ${r + 1}, colonne ${COLS_PT[c]}<br>
+      Configuration électronique : <b>${cf.html}</b><br>
+      Couche externe : n = ${cf.ext} → <b>${cf.val} électron${cf.val > 1 ? 's' : ''} de valence</b>
+      ${c === 7 ? ' · gaz noble : couche externe pleine, très stable.' : sy === 'H' ? ' · il lui manque 1 électron pour le duet.' : ` · il lui manque ${8 - cf.val} électron${8 - cf.val > 1 ? 's' : ''} pour l’octet.`}</div>`;
+  }
+  return `<button class="btn small ghost close" data-close>✕ Fermer</button><h2>🧮 Classification périodique</h2>
+  <p class="muted">Les trois premières lignes, avec la configuration électronique de chaque atome. <span style="color:var(--c3);font-weight:800">En rose</span> : la couche externe (électrons de valence). Gaz nobles en vert.</p>
+  <p class="swipe">↔ Fais glisser le tableau pour voir toutes les colonnes.</p><div class="ptc-wrap"><table class="ptc"><tr><th></th>${COLS_PT.map(c => `<th>colonne ${c}</th>`).join('')}</tr>
+  ${PTD.map((row, r) => `<tr><th>ligne ${r + 1}</th>${row.map((cell, c) => cell ? `<td class="${cell[3]} ${PTSEL && PTSEL[0] === r && PTSEL[1] === c ? 'sel' : ''}" data-pt="${r},${c}" tabindex="0" role="button" aria-label="${cell[2]}"><div class="z">${cell[1]}</div><div class="sy">${cell[0]}</div><div class="nm">${cell[2]}</div><div class="cf">${configV(cell[1]).html}</div></td>` : '<td class="e"></td>').join('')}</tr>`).join('')}
+  </table></div>${det}`;
+}
+$('#bPT').onclick = () => { $('#ptPanel').innerHTML = ptHTML(); $('#ovPT').classList.add('open'); };
+$('#ovPT').addEventListener('click', e => { const t = e.target.closest('[data-pt]'); if (t) { PTSEL = t.dataset.pt.split(',').map(Number); $('#ptPanel').innerHTML = ptHTML(); } });
+$('#ovPT').addEventListener('keydown', e => { const t = e.target.closest('[data-pt]'); if (t && (e.key === 'Enter' || e.key === ' ')) { e.preventDefault(); t.click(); } });
+
+
+/* ---------- Affichage du chlore : Cℓ (l en script, pour ne pas le confondre avec un i majuscule) ---------- */
+(function () {
+  const RX = /(^|[^a-zà-ÿ])Cl(?![a-zà-ÿ])/g;
+  const fixNode = n => {
+    if (n.nodeType === 3) {
+      const t = n.nodeValue;
+      if (t.indexOf('Cl') >= 0) {
+        const u = t.replace(RX, '$1Cℓ').replace(/(Na|Ca|Mg|K)Cl/g, '$1Cℓ');
+        if (u !== t) n.nodeValue = u;
+      }
+    } else if (n.nodeType === 1 && n.tagName !== 'SCRIPT' && n.tagName !== 'STYLE' && n.tagName !== 'INPUT' && n.tagName !== 'TEXTAREA') {
+      n.childNodes.forEach(fixNode);
+    }
+  };
+  fixNode(document.body);
+  new MutationObserver(ms => ms.forEach(m => {
+    if (m.type === 'characterData') fixNode(m.target); else m.addedNodes.forEach(fixNode);
+  })).observe(document.body, { childList: true, subtree: true, characterData: true });
+})();
 
 /* ---------- démarrage ---------- */
 if (PROF) $('#profbar').style.display = '';
